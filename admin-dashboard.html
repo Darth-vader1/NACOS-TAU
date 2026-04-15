@@ -1379,7 +1379,6 @@
 
       if (!result.isConfirmed) return;
 
-      const supabase = getSupabase();
       const { error } = await supabase.from('timetables').delete().eq('id', id);
 
       if (error) {
@@ -1403,7 +1402,6 @@
 
       if (!result.isConfirmed) return;
 
-      const supabase = getSupabase();
       const { error } = await supabase.from('academic_resources').delete().eq('id', id);
 
       if (error) {
@@ -1416,7 +1414,6 @@
     }
 
     async function loadCareerPaths() {
-      const supabase = getSupabase();
       const { data, error } = await supabase
         .from('career_paths')
         .select('*')
@@ -1443,7 +1440,7 @@
 
     async function handleAddCareerPath(e) {
       e.preventDefault();
-      const supabase = getSupabase();
+      // const supabase = getSupabase(); // removed
 
       const pathKey = document.getElementById('cp-key').value.trim().toLowerCase();
       const title = document.getElementById('cp-title').value.trim();
@@ -1508,7 +1505,6 @@
 
       if (!result.isConfirmed) return;
 
-      const supabase = getSupabase();
       const { error } = await supabase.from('career_paths').delete().eq('id', id);
 
       if (error) {
