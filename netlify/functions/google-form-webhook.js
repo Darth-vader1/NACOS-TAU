@@ -24,10 +24,11 @@ exports.handler = async function (event, context) {
             email: email.toLowerCase(),
             matric_no: matric_no.toUpperCase(),
             course,
-            department: department || null
+            department: department || null,
+            status: 'pending'
         };
 
-        const response = await fetch(`${supabaseUrl}/rest/v1/Students`, {
+        const response = await fetch(`${supabaseUrl}/rest/v1/students`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

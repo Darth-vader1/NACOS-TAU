@@ -57,7 +57,7 @@ import { supabase } from "../../assets/js/supabase-config.js";
   
           // Check if student already exists in database
           const { data: existingStudent, error: checkError } = await supabase
-              .from("Students")
+              .from("students")
               .select("*")
               .eq("email", user.email)
               .single();
@@ -76,13 +76,14 @@ import { supabase } from "../../assets/js/supabase-config.js";
           // If the student doesn't exist, insert their data
           if (!existingStudent) {
               const { error: insertError } = await supabase
-                  .from("Students")
+                  .from("students")
                   .insert([{
                       matric_no: matric_no,
                       name: full_name,
                       course: course,
                       email: user.email,
                       id: user.id, // Link user to student table
+                      status: 'pending' // Default to pending for new signups too
                   }]);
   
               if (insertError) {
@@ -95,6 +96,28 @@ import { supabase } from "../../assets/js/supabase-config.js";
                   });
                   return;
               }
+
+              // Since they just signed up and are pending, we should probably not let them in yet
+              await supabase.auth.signOut();
+              Swal.fire({
+                  title: "Account Pending",
+                  text: "Your account has been created but is pending admin verification. Please check back later.",
+                  icon: "info",
+                  confirmButtonText: "Okay",
+              });
+              return;
+          }
+
+          // Check if student is verified
+          if (existingStudent.status !== 'verified') {
+              await supabase.auth.signOut();
+              Swal.fire({
+                  title: "Access Denied",
+                  text: "Your account is still pending admin verification.",
+                  icon: "warning",
+                  confirmButtonText: "Okay",
+              });
+              return;
           }
   
           // Success - Redirect to dashboard

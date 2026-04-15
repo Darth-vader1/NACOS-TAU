@@ -25,29 +25,30 @@
 
 //     const user = data.user;
 
-//     // Check if user exists in "Students" table
-//     const { data: existingStudent, error: checkError } = await supabase
-//       .from("Students")
-//       .select("*")
-//       .eq("email", user.email)
-//       .single();
+//     // Check if user exists in "students" table
+    const { data: existingStudent, error: checkError } = await supabase
+      .from("students")
+      .select("*")
+      .eq("email", user.email)
+      .single();
 
-//     if (checkError && checkError.code !== "PGRST116") {
-//       return { statusCode: 500, body: JSON.stringify({ error: "Error checking user data" }) };
-//     }
+    if (checkError && checkError.code !== "PGRST116") {
+      return { statusCode: 500, body: JSON.stringify({ error: "Error checking user data" }) };
+    }
 
-//     // If the student doesn't exist, insert their data
-//     if (!existingStudent) {
-//       const userMeta = user.user_metadata || {};
-//       const { error: insertError } = await supabase.from("Students").insert([
-//         {
-//           matric_no: userMeta.matric_no || "N/A",
-//           name: userMeta.full_name || "Unknown",
-//           course: userMeta.course || "Not Assigned",
-//           email: user.email,
-//           id: user.id,
-//         },
-//       ]);
+    // If the student doesn't exist, insert their data
+    if (!existingStudent) {
+      const userMeta = user.user_metadata || {};
+      const { error: insertError } = await supabase.from("students").insert([
+        {
+          matric_no: userMeta.matric_no || "N/A",
+          name: userMeta.full_name || "Unknown",
+          course: userMeta.course || "Not Assigned",
+          email: user.email,
+          id: user.id,
+          status: 'pending'
+        },
+      ]);
 
 //       if (insertError) {
 //         return { statusCode: 500, body: JSON.stringify({ error: "Failed to save student data" }) };

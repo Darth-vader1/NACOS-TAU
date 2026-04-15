@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS students (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     course VARCHAR(100) NOT NULL,
+    department VARCHAR(100),
+    status VARCHAR(20) DEFAULT 'pending',
     profile_picture_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const signUpStudent = async (email, password, full_name, matric_no, course) => {
       // Check for email and matric number duplicates
       const { data:existingUser, error:existingUserError } = await supabase
-      .from("Students")
+      .from("students")
       .select("email, matric_no")
       .or(`email.eq.${email},matric_no.eq.${matric_no}`);
 
@@ -101,44 +101,73 @@ document.addEventListener('DOMContentLoaded', function() {
           icon: "error",
           confirmButtonText: "Okay",
         });
-      } else if (existing.matric_no === matric_no) {
+        return;
+      }
+
+      if (existing.matric_no === matric_no) {
         Swal.fire({
           title: "Error!",
           text: "A user with this matric number already exists.",
           icon: "error",
           confirmButtonText: "Okay",
         });
+        return;
       }
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+        full_name: full_name,
+        matric_no: matric_no,
+        course: course,
+        },
+      },
+      });
+
+      if (error) {
+      Swal.fire({
+        title: "Error!",
+        text: "We're unable to create your account at this time. Please try again later.",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
       return;
       }
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: "https://nacos-tau-chapter.netlify.app/student-login.html", 
-          data: { matric_no: matric_no, full_name: full_name, course: course },
-        }
+
+      const user = data.user;
+
+      const { error: insertError } = await supabase
+      .from("students")
+      .insert([{
+        matric_no: matric_no,
+        name: full_name,
+        course: course,
+        email: email,
+        id: user.id,
+        status: 'pending' // New signups are pending by default
+      }]);
+
+      if (insertError) {
+      Swal.fire({
+        title: "Error!",
+        text: "We're unable to create your account at this time. Please try again later.",
+        icon: "error",
+        confirmButtonText: "Okay",
       });
-    
-      if (error) {
-        // console.error('Sign-up error:', error.message);
-        Swal.fire({
-          title: "Error!",
-          text: "Signup Failed! Please try again.",
-          icon: "error",
-          confirmButtonText: "Okay",
-        });
-        return;
-      } else{
-        Swal.fire({
-          title: "Check Your Email!",
-          text: "A confirmation email has been sent. Please verify your email before logging in.",
-          icon: "success",
-          confirmButtonText: "Okay",
-        }).then(() => {
-          window.location.href = "student-login.html";
-        });
+      return;
       }
+
+      Swal.fire({
+      title: "Success!",
+      text: "Signup successful! Your account is pending admin verification. Please check back later.",
+      icon: "success",
+      confirmButtonText: "Okay",
+      }).then(() => {
+      window.location.href = "student-login.html";
+      });
     };
     signUpStudent(studentEmail.toLowerCase(), confirm_password.value.trim(), fullName, matricNo.toUpperCase(), course);
   });

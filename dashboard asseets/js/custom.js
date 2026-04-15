@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Store the image URL in the database
         const { error: updateError } = await supabase
-            .from("Students")
+            .from("students")
             .update({ display_picture: imageUrl })
             .eq("id", userId);
     
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
     }
     const { data, error: fetchError } = await supabase
-        .from("Students")
+        .from("students")
         .select("*") // Select all columns, or specify them like: .select("name, matric_no, course")
         .eq("email", userEmail) // Filter data by user email
         .single(); // Expect only one record
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const userId = user.user?.id;
         const {data, fetchError} = await supabase
-            .from("Students")
+            .from("students")
             .select("*")
             .eq("id", userId)
             .single();

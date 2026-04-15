@@ -217,6 +217,12 @@
           <span>Payments</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="#students" class="nav-link" data-section="students">
+          <i class="bi bi-people"></i>
+          <span>Student Verification</span>
+        </a>
+      </li>
       <li class="nav-item mt-4">
         <a href="#" class="nav-link" id="logout-btn">
           <i class="bi bi-box-arrow-right"></i>
@@ -311,6 +317,19 @@
                 </div>
                 <div class="stat-icon" style="background: #fce4ec; color: #c2185b;">
                   <i class="bi bi-credit-card"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <p class="text-muted mb-1">Pending Students</p>
+                  <h3 id="stat-students">0</h3>
+                </div>
+                <div class="stat-icon" style="background: #e0f2f1; color: #00796b;">
+                  <i class="bi bi-person-check"></i>
                 </div>
               </div>
             </div>
@@ -501,6 +520,40 @@
                   </tr>
                 </thead>
                 <tbody id="payments-table-body">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-4">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="students-section" class="content-section" style="display: none;">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-people me-2"></i>Student Verification</span>
+            <div class="btn-group">
+              <button class="btn btn-outline-secondary btn-sm active" data-student-filter="pending">Pending</button>
+              <button class="btn btn-outline-secondary btn-sm" data-student-filter="verified">Verified</button>
+              <button class="btn btn-outline-secondary btn-sm" data-student-filter="all">All</button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Matric No</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="students-table-body">
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">Loading...</td>
                   </tr>
@@ -853,11 +906,94 @@
       await loadCareerPaths();
       await loadEvents();
       await loadPayments();
+      await loadStudents();
 
       initNavigation();
       initForms();
       initLogout();
+      initStudentFilters();
     });
+
+    function initStudentFilters() {
+      document.querySelectorAll('[data-student-filter]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('[data-student-filter]').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          loadStudents(this.dataset.studentFilter);
+        });
+      });
+    }
+
+    async function loadStudents(filter = 'pending') {
+      let query = supabase.from('students').select('*').order('created_at', { ascending: false });
+      
+      if (filter !== 'all') {
+        query = query.eq('status', filter);
+      }
+
+      const { data, error } = await query;
+      const tbody = document.getElementById('students-table-body');
+
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No ${filter} students found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(s => `
+        <tr>
+          <td><strong>${escapeHtml(s.name)}</strong></td>
+          <td>${escapeHtml(s.email)}</td>
+          <td>${escapeHtml(s.matric_no)}</td>
+          <td>${escapeHtml(s.course)}</td>
+          <td>
+            <span class="badge ${s.status === 'verified' ? 'bg-success' : 'bg-warning'}">${s.status}</span>
+          </td>
+          <td>
+            ${s.status === 'pending' ? `
+              <button class="btn btn-sm btn-success me-1" onclick="verifyStudent('${s.id}', true)"><i class="bi bi-check"></i> Verify</button>
+              <button class="btn btn-sm btn-danger" onclick="verifyStudent('${s.id}', false)"><i class="bi bi-x"></i> Reject</button>
+            ` : `
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${s.id}')"><i class="bi bi-trash"></i></button>
+            `}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.verifyStudent = async function(id, approved) {
+      const status = approved ? 'verified' : 'rejected';
+      const { error } = await supabase.from('students').update({ status }).eq('id', id);
+
+      if (error) {
+        Swal.fire('Error', 'Failed to update student status', 'error');
+      } else {
+        Swal.fire('Success', `Student ${status} successfully`, 'success');
+        loadStudents(document.querySelector('[data-student-filter].active').dataset.studentFilter);
+        loadDashboardStats();
+      }
+    };
+
+    window.deleteStudent = async function(id) {
+      const result = await Swal.fire({
+        title: 'Delete Student?',
+        text: 'This will permanently remove the student profile.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Delete'
+      });
+
+      if (!result.isConfirmed) return;
+
+      const { error } = await supabase.from('students').delete().eq('id', id);
+      if (error) {
+        Swal.fire('Error', 'Failed to delete student', 'error');
+      } else {
+        Swal.fire('Deleted', 'Student removed', 'success');
+        loadStudents(document.querySelector('[data-student-filter].active').dataset.studentFilter);
+        loadDashboardStats();
+      }
+    };
 
     function initNavigation() {
       document.querySelectorAll('.nav-link[data-section]').forEach(link => {
@@ -888,13 +1024,14 @@
     }
 
     async function loadDashboardStats() {
-      const [questions, timetables, resources, careers, events, pendingPayments] = await Promise.all([
+      const [questions, timetables, resources, careers, events, pendingPayments, pendingStudents] = await Promise.all([
         supabase.from('past_questions').select('id', { count: 'exact' }),
         supabase.from('timetables').select('id', { count: 'exact' }),
         supabase.from('academic_resources').select('id', { count: 'exact' }),
         supabase.from('career_paths').select('id', { count: 'exact' }),
         supabase.from('events').select('id', { count: 'exact' }).eq('is_active', true),
-        supabase.from('payment_verification').select('id', { count: 'exact' }).eq('status', 'pending')
+        supabase.from('payment_verification').select('id', { count: 'exact' }).eq('status', 'pending'),
+        supabase.from('students').select('id', { count: 'exact' }).eq('status', 'pending')
       ]);
 
       document.getElementById('stat-questions').textContent = questions.count || 0;
@@ -903,10 +1040,10 @@
       document.getElementById('stat-careers').textContent = careers.count || 0;
       document.getElementById('stat-events').textContent = events.count || 0;
       document.getElementById('stat-payments').textContent = pendingPayments.count || 0;
+      document.getElementById('stat-students').textContent = pendingStudents.count || 0;
     }
 
     async function loadEvents() {
-      const supabase = getSupabase();
       const { data, error } = await supabase
         .from('events')
         .select('*')
@@ -934,7 +1071,6 @@
     }
 
     async function loadPayments() {
-      const supabase = getSupabase();
       const { data, error } = await supabase
         .from('payment_verification')
         .select('*, students(name, matric_no), events(title)')
@@ -971,7 +1107,6 @@
 
     async function handleAddEvent(e) {
       e.preventDefault();
-      const supabase = getSupabase();
       const session = await checkAuth();
 
       const title = document.getElementById('ev-title').value.trim();
@@ -1034,7 +1169,6 @@
 
       if (!result.isConfirmed) return;
 
-      const supabase = getSupabase();
       const { error } = await supabase.from('events').delete().eq('id', id);
 
       if (error) {
@@ -1047,7 +1181,6 @@
     }
 
     async function verifyPayment(id, approved) {
-      const supabase = getSupabase();
       const session = await checkAuth();
 
       const { data: adminData } = await supabase
