@@ -1,0 +1,31 @@
+# NACOS Website - Git Ignore 
+ 
+# Large files - NOT in git 
+*.pdf 
+*.zip 
+*.rar 
+*.7z 
+*.mp4 
+*.avi 
+*.mov 
+*.mkv
+ .assets/img/
+ **./img/
+# Environment 
+.env 
+.env.* 
+.netlify/
+# Dependencies 
+node_modules/ 
+ 
+# IDE 
+.vscode/ 
+.idea/ 
+ 
+# OS 
+.DS_Store 
+Thumbs.db 
+desktop.ini 
+ 
+# Logs 
+*.log 
