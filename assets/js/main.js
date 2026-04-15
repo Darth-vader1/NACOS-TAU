@@ -5,11 +5,9 @@
 * Author: BootstrapMade.com
 * License: https://bootstrapmade.com/license/
 */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const supabaseUrl = "https://gqhhvbnbbmstfrhtegsl.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGh2Ym5iYm1zdGZyaHRlZ3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzkwOTcsImV4cCI6MjA5MTc1NTA5N30.cSjwB9V-jY3yekNz0wS8EdlKG79lQr-SYPRj20eGicg";
+import { supabase } from './supabase-config.js';
 const homeBtn = document.getElementById("home-btn");
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// const supabase = createClient(supabaseUrl, supabaseAnonKey); // Removed duplicate
 const rsvpLink = document.getElementById("rsvp-link");
 const signinBtn = document.getElementById("signin-btn");
 const signinBtn2 = document.getElementById("signin-btn2");

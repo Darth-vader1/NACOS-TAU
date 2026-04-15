@@ -1,8 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const supabaseUrl = "https://gqhhvbnbbmstfrhtegsl.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGh2Ym5iYm1zdGZyaHRlZ3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzkwOTcsImV4cCI6MjA5MTc1NTA5N30.cSjwB9V-jY3yekNz0wS8EdlKG79lQr-SYPRj20eGicg";
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from "../../assets/js/supabase-config.js";
 const uploadForm = document.getElementById("upload-form");
 const display_picture = document.getElementById("profile-pic");
 const logoutBtn = document.getElementById("logout-btn");

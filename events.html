@@ -168,11 +168,10 @@
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="config.local.js"></script>
 
-  <script>
-    const supabaseUrl = "https://gqhhvbnbbmstfrhtegsl.supabase.co";
-    const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGh2Ym5iYm1zdGZyaHRlZ3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzkwOTcsImV4cCI6MjA5MTc1NTA5N30.cSjwB9V-jY3yekNz0wS8EdlKG79lQr-SYPRj20eGicg";
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+  <script type="module">
+    import { supabase } from './assets/js/supabase-config.js';
 
     let currentEvent = null;
     let userSession = null;
@@ -180,13 +179,22 @@
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     document.addEventListener('DOMContentLoaded', async function() {
-      userSession = await checkAuth();
+      const { data: { session } } = await supabase.auth.getSession();
+      userSession = session;
       await loadEvents();
     });
 
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session;
+    async function getStudentId() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from('students')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      return data;
     }
 
     async function loadEvents() {
@@ -247,7 +255,7 @@
       }).join('');
     }
 
-    async function showEventDetails(eventId) {
+    window.showEventDetails = async function(eventId) {
       const { data: event, error } = await supabase
         .from('events')
         .select('*')
@@ -307,11 +315,12 @@
       if (userSession) {
         footerHtml = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
 
+        const student = await getStudentId();
         const { data: registration } = await supabase
           .from('event_registrations')
           .select('*')
           .eq('event_id', eventId)
-          .eq('student_id', (await getStudentId()).id)
+          .eq('student_id', student.id)
           .single();
 
         if (registration) {
@@ -345,22 +354,9 @@
       document.getElementById('eventModalFooter').innerHTML = footerHtml;
 
       new bootstrap.Modal(document.getElementById('eventModal')).show();
-    }
+    };
 
-    async function getStudentId() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data } = await supabase
-        .from('students')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      return data;
-    }
-
-    async function registerForEvent(eventId) {
+    window.registerForEvent = async function(eventId) {
       if (!userSession) {
         window.location.href = 'student-login.html';
         return;
@@ -419,7 +415,7 @@
           loadEvents();
         });
       }
-    }
+    };
 
     function escapeHtml(text) {
       if (!text) return '';

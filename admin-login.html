@@ -111,7 +111,10 @@
     </section>
   </main>
 
-  <script>
+  <script src="config.local.js"></script>
+  <script type="module">
+    import { supabase } from './assets/js/supabase-config.js';
+
     document.addEventListener('DOMContentLoaded', function() {
       const passwordInput = document.getElementById('password');
       const togglePassword = document.getElementById('toggle-password');
@@ -133,7 +136,6 @@
         const password = document.getElementById('password').value.trim();
 
         try {
-          const supabase = getSupabase();
           const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password

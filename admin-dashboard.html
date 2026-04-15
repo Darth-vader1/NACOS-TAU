@@ -835,8 +835,11 @@
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="config.local.js"></script>
 
-  <script>
+  <script type="module">
+    import { supabase, requireAdmin, checkAuth, signOut } from './assets/js/supabase-config.js';
+
     let currentAdmin = null;
 
     document.addEventListener('DOMContentLoaded', async function() {
@@ -885,8 +888,6 @@
     }
 
     async function loadDashboardStats() {
-      const supabase = getSupabase();
-
       const [questions, timetables, resources, careers, events, pendingPayments] = await Promise.all([
         supabase.from('past_questions').select('id', { count: 'exact' }),
         supabase.from('timetables').select('id', { count: 'exact' }),
@@ -1090,7 +1091,6 @@
     }
 
     async function loadPastQuestions() {
-      const supabase = getSupabase();
       const { data, error } = await supabase
         .from('past_questions')
         .select('*')
@@ -1118,7 +1118,6 @@
     }
 
     async function loadTimetables() {
-      const supabase = getSupabase();
       const { data, error } = await supabase
         .from('timetables')
         .select('*')
@@ -1145,7 +1144,6 @@
     }
 
     async function loadResources() {
-      const supabase = getSupabase();
       const { data, error } = await supabase
         .from('academic_resources')
         .select('*')
@@ -1180,7 +1178,6 @@
 
     async function handleAddQuestion(e) {
       e.preventDefault();
-      const supabase = getSupabase();
       const session = await checkAuth();
 
       const courseCode = document.getElementById('q-course-code').value.trim();
@@ -1244,7 +1241,6 @@
 
     async function handleAddTimetable(e) {
       e.preventDefault();
-      const supabase = getSupabase();
       const session = await checkAuth();
 
       const title = document.getElementById('t-title').value.trim();
@@ -1310,7 +1306,6 @@
 
     async function handleAddResource(e) {
       e.preventDefault();
-      const supabase = getSupabase();
       const session = await checkAuth();
 
       const title = document.getElementById('r-title').value.trim();
@@ -1361,7 +1356,6 @@
 
       if (!result.isConfirmed) return;
 
-      const supabase = getSupabase();
       const { error } = await supabase.from('past_questions').delete().eq('id', id);
 
       if (error) {

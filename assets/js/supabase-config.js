@@ -2,10 +2,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
 // ============================================
-// YOUR SUPABASE CREDENTIALS - REPLACE THESE
+// SUPABASE CONFIGURATION
 // ============================================
-const SUPABASE_URL = "https://gqhhvbnbbmstfrhtegsl.supabase.co"
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGh2Ym5iYm1zdGZyaHRlZ3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzkwOTcsImV4cCI6MjA5MTc1NTA5N30.cSjwB9V-jY3yekNz0wS8EdlKG79lQr-SYPRj20eGicg";
+
+// These look for global window variables (from config.local.js or Netlify build)
+const SUPABASE_URL = window.SUPABASE_URL || "https://YOUR_PROJECT_REF.supabase.co";
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "YOUR_ANON_KEY";
 
 // Create single supabase client instance
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
