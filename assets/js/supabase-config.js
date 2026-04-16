@@ -2,73 +2,175 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
 // ============================================
-// SUPABASE CONFIGURATION
+// PRODUCTION-READY SUPABASE CONFIGURATION
 // ============================================
 
-// These look for global window variables (from config.local.js or Netlify build)
-const SUPABASE_URL = window.SUPABASE_URL || "https://YOUR_PROJECT_REF.supabase.co";
-const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "YOUR_ANON_KEY";
+// Validate configuration
+if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+    console.error('❌ Supabase configuration missing!');
+    console.error('Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables');
+    throw new Error('Supabase configuration is required');
+}
 
-// Create single supabase client instance
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const SUPABASE_URL = window.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY;
+
+// Create client with production settings
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+    },
+    realtime: {
+        params: {
+            eventsPerSecond: 10
+        }
+    }
+});
+
+// ============================================
+// HELPER: Retry Logic
+// ============================================
+
+async function retryRequest(fn, retries = 3, delay = 1000) {
+    try {
+        return await fn();
+    } catch (error) {
+        if (retries === 0) throw error;
+        console.log(`Retrying... ${retries} attempts left`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return retryRequest(fn, retries - 1, delay * 2);
+    }
+}
 
 // ============================================
 // AUTHENTICATION FUNCTIONS
 // ============================================
 
 export async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session;
-}
-
-export async function requireAuth() {
-    const session = await checkAuth();
-    if (!session) {
-        window.location.href = 'admin-login.html';
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        return session;
+    } catch (error) {
+        console.error('Auth check failed:', error.message);
         return null;
     }
+}
+
+export async function requireAuth(redirectUrl = 'admin-login.html') {
+    const session = await checkAuth();
+    if (!session) {
+        sessionStorage.setItem('redirect_after_login', window.location.pathname);
+        window.location.href = redirectUrl;
+        return null;
+    }
+    
+    // Check session expiry
+    const expiresAt = session.expires_at;
+    if (expiresAt && Date.now() / 1000 > expiresAt) {
+        await supabase.auth.signOut();
+        window.location.href = redirectUrl;
+        return null;
+    }
+    
     return session;
 }
 
 export async function checkAdmin() {
-    const session = await checkAuth();
-    if (!session) return false;
+    try {
+        const session = await checkAuth();
+        if (!session) return false;
 
-    const { data, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
+        const { data, error } = await supabase
+            .from('admin_users')
+            .select('role, email, name, id')
+            .eq('user_id', session.user.id)
+            .single();
 
-    if (error || !data) return false;
-    return true;
+        if (error) {
+            if (error.code === 'PGRST116') {
+                // No admin record found
+                return false;
+            }
+            console.error('Admin check error:', error.message);
+            return false;
+        }
+        
+        if (!data) return false;
+        
+        // Cache admin info for current session
+        sessionStorage.setItem('admin_role', data.role);
+        sessionStorage.setItem('admin_email', data.email);
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Admin check failed:', error);
+        return false;
+    }
 }
 
 export async function requireAdmin() {
     const isAdmin = await checkAdmin();
     if (!isAdmin) {
-        // Check if Swal is available (SweetAlert)
+        const errorMessage = 'You do not have permission to access the admin panel.';
+        
         if (typeof Swal !== 'undefined') {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Access Denied',
-                text: 'You do not have permission to access the admin panel.',
+                text: errorMessage,
                 icon: 'error',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = 'index.html';
+                confirmButtonText: 'OK',
+                timer: 3000
             });
         } else {
-            alert('Access Denied: You do not have admin permissions.');
-            window.location.href = 'index.html';
+            alert(errorMessage);
         }
+        
+        window.location.href = 'index.html';
         return false;
     }
     return true;
 }
 
 export async function signOut() {
-    await supabase.auth.signOut();
-    window.location.href = 'admin-login.html';
+    try {
+        await supabase.auth.signOut();
+        sessionStorage.clear();
+        localStorage.removeItem('supabase.auth.token');
+        window.location.href = 'admin-login.html';
+    } catch (error) {
+        console.error('Sign out error:', error);
+        // Force redirect even if sign out fails
+        window.location.href = 'admin-login.html';
+    }
 }
 
-console.log('✅ Supabase client initialized for:', SUPABASE_URL)
+// ============================================
+// SESSION MONITORING
+// ============================================
+
+// Listen for auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+        console.log('User signed in');
+        // Clear any cached admin check
+        sessionStorage.removeItem('admin_role');
+    } else if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        sessionStorage.clear();
+    } else if (event === 'TOKEN_REFRESHED') {
+        console.log('Session refreshed');
+    } else if (event === 'USER_UPDATED') {
+        console.log('User updated');
+        sessionStorage.removeItem('admin_role');
+    }
+});
+
+// Only log in development
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    console.log('✅ Supabase client initialized');
+}

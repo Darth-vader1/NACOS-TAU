@@ -19,6 +19,7 @@ config.local.js
 # Dependencies 
 node_modules/ 
  
+.env.local
 # IDE 
 .vscode/ 
 .idea/ 
