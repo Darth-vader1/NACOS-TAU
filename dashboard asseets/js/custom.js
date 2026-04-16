@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Store the image URL in the database
         const { error: updateError } = await supabase
             .from("students")
-            .update({ display_picture: imageUrl })
-            .eq("id", userId);
+            .update({ profile_picture_url: imageUrl })
+            .eq("user_id", userId);
     
         if (updateError) {
             Swal.fire({
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch student data
     const fetchStudentData = async () => {
-    const { data: user, error } = await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
     if (error || !user) {
         Swal.fire({
@@ -92,13 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    const userEmail = user.user?.email; // Get logged-in user email
-    const {data:rsvpData, error: rsvpError} = await supabase
-        .from("Events")
+    // Check for RSVP (using event_registrations table)
+    const { data:rsvpData, error: rsvpError } = await supabase
+        .from("event_registrations")
         .select("*")
-        .eq("id", user.user?.id)
-        .single();
-    if(rsvpData){
+        .eq("student_id", user.id);
+
+    if (rsvpData && rsvpData.length > 0) {
         document.getElementById("rsvp-download").style.display = "flex";
         document.getElementById("rsvp-modal-open").removeAttribute('data-bs-toggle');
         document.getElementById("rsvp-modal-open").removeAttribute('data-bs-target');
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             Swal.fire({
                 title: "RSVP Details",
-                text: "You have already RSVP'd for the event. Download your ticket from the dashboard.",
+                text: "You have already RSVP'd for an event. Check the events page for more details.",
                 icon: "info",
                 confirmButtonText: "Okay",
             })
@@ -117,11 +117,12 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = "events.html";
         })
     }
+
     const { data, error: fetchError } = await supabase
         .from("students")
-        .select("*") // Select all columns, or specify them like: .select("name, matric_no, course")
-        .eq("email", userEmail) // Filter data by user email
-        .single(); // Expect only one record
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
 
     if (fetchError) {
         Swal.fire({
@@ -130,15 +131,14 @@ document.addEventListener('DOMContentLoaded', function() {
             icon: "error",
             confirmButtonText: "Okay",
         })
-        // console.error("Error fetching student data:", fetchError);
         return;
     }
-    document.getElementById("student-name").textContent = data.name || "Unknown";
-        document.getElementById("matric_no").textContent = data.matric_no || "N/A";
-        document.getElementById("course").textContent = data.course || "N/A";
-        if(data.display_picture){
-            document.getElementById("display_picture").src = data.display_picture + `?t=${new Date().getTime()}`;
-        }
+    document.getElementById("student-name").textContent = `${data.first_name} ${data.last_name}` || "Unknown";
+    document.getElementById("matric_no").textContent = data.matric_number || "N/A";
+    document.getElementById("course").textContent = data.department || "N/A";
+    if(data.profile_picture_url){
+        document.getElementById("display_picture").src = data.profile_picture_url + `?t=${new Date().getTime()}`;
+    }
     };
 
     logoutBtn.addEventListener("click", async (e) => {
@@ -160,9 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchStudentData();
 
     const eventRsvp = async () =>{
-        const { data: user, error } = await supabase.auth.getUser();
+        const { data: { user }, error } = await supabase.auth.getUser();
 
-        if(error){
+        if(error || !user){
             Swal.fire({
                 title: "Error!",
                 text: "You're not authenticated. Please signin.",
@@ -171,55 +171,48 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             return;
         }
-        const userId = user.user?.id;
-        const {data, fetchError} = await supabase
-            .from("students")
-            .select("*")
-            .eq("id", userId)
+        const userId = user.id;
+        
+        // Find the event ID for "Unwind and Connect" (mocking it for now or getting the latest active event)
+        const { data: eventData } = await supabase
+            .from("events")
+            .select("id")
+            .eq("title", "Unwind and Connect")
             .single();
-        if(fetchError){
-            Swal.fire({
-                title: "Error!",
-                text: "An error occurred while fetching student data.",
-                icon: "error",
-                confirmButtonText: "Okay",
-            });
+
+        if (!eventData) {
+            Swal.fire('Error', 'Event not found. Please contact admin.', 'error');
             return;
         }
-        const matricNo = data.matric_no;
-        const rsvp = "RSVP";
-        // console.log(userId);
-        const { data: existingStudent, error: checkError } = await supabase
-              .from("Events")
+
+        const eventId = eventData.id;
+
+        // Check for existing registration
+        const { data: existingReg, error: checkError } = await supabase
+              .from("event_registrations")
               .select("*")
-              .eq("id", userId)
+              .eq("event_id", eventId)
+              .eq("student_id", userId)
               .single();
   
-          if (checkError && checkError.code !== "PGRST116") { // Ignore "no rows found" error
-              console.error("Error checking student:", checkError);
-              Swal.fire({
-                  title: "Error!",
-                  text: "An error occurred while checking user data.",
-                  icon: "error",
-                  confirmButtonText: "Okay",
-              });
-              return;
-          }
-          if(existingStudent){
+          if (existingReg) {
             Swal.fire({
                 title: "Error!",
-                text: "You already have a spot for this event. Download your ticket from your dashboard.",
+                text: "You already have a spot for this event. Download your ticket from the events page.",
                 icon: "error",
                 confirmButtonText: "Okay",
             })
-          }else{
-            const { error: insertError } = await supabase
-            .from("Events")
+            return;
+          }
+
+          const { error: insertError } = await supabase
+            .from("event_registrations")
             .insert([{
-                matric_no: matricNo,
-                id: userId, 
-                unwind_and_connect: rsvp,
+                event_id: eventId,
+                student_id: userId,
+                payment_status: 'free' // Defaulting to free for this specific event link
             }]);
+
             if(insertError){
                 Swal.fire({
                     title: "Error!",
@@ -233,13 +226,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 title: "Success!",
                 text: "You have successfully RSVP'd for the event.",
                 icon: "success",
-                confirmButtonText: "Click here to download your ticket",
+                confirmButtonText: "View Event",
             }).then(()=>{
                 window.location.href = "events.html";
             })
-          }
-        
-        
     }
     document.getElementById("rsvp-btn").addEventListener("click", (e)=>{
         e.preventDefault();

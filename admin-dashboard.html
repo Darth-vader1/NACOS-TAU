@@ -536,7 +536,7 @@
             <span><i class="bi bi-people me-2"></i>Student Verification</span>
             <div class="btn-group">
               <button class="btn btn-outline-secondary btn-sm active" data-student-filter="pending">Pending</button>
-              <button class="btn btn-outline-secondary btn-sm" data-student-filter="verified">Verified</button>
+              <button class="btn btn-outline-secondary btn-sm" data-student-filter="approved">Approved</button>
               <button class="btn btn-outline-secondary btn-sm" data-student-filter="all">All</button>
             </div>
           </div>
@@ -939,30 +939,35 @@
         return;
       }
 
-      tbody.innerHTML = data.map(s => `
+      tbody.innerHTML = data.map(s => {
+        let badgeClass = 'bg-warning';
+        if (s.status === 'approved') badgeClass = 'bg-success';
+        if (s.status === 'rejected') badgeClass = 'bg-danger';
+
+        return `
         <tr>
-          <td><strong>${escapeHtml(s.name)}</strong></td>
-          <td>${escapeHtml(s.email)}</td>
-          <td>${escapeHtml(s.matric_no)}</td>
-          <td>${escapeHtml(s.course)}</td>
+          <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></td>
+          <td>${escapeHtml(s.school_email)}</td>
+          <td>${escapeHtml(s.matric_number)}</td>
+          <td>${escapeHtml(s.department)}</td>
           <td>
-            <span class="badge ${s.status === 'verified' ? 'bg-success' : 'bg-warning'}">${s.status}</span>
+            <span class="badge ${badgeClass}">${s.status}</span>
           </td>
           <td>
             ${s.status === 'pending' ? `
-              <button class="btn btn-sm btn-success me-1" onclick="verifyStudent('${s.id}', true)"><i class="bi bi-check"></i> Verify</button>
-              <button class="btn btn-sm btn-danger" onclick="verifyStudent('${s.id}', false)"><i class="bi bi-x"></i> Reject</button>
+              <button class="btn btn-sm btn-success me-1" onclick="verifyStudent('${s.user_id}', true)"><i class="bi bi-check"></i> Approve</button>
+              <button class="btn btn-sm btn-danger" onclick="verifyStudent('${s.user_id}', false)"><i class="bi bi-x"></i> Reject</button>
             ` : `
-              <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${s.id}')"><i class="bi bi-trash"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${s.user_id}')"><i class="bi bi-trash"></i></button>
             `}
           </td>
         </tr>
-      `).join('');
+      `}).join('');
     }
 
-    window.verifyStudent = async function(id, approved) {
-      const status = approved ? 'verified' : 'rejected';
-      const { error } = await supabase.from('students').update({ status }).eq('id', id);
+    window.verifyStudent = async function(userId, approved) {
+      const status = approved ? 'approved' : 'rejected';
+      const { error } = await supabase.from('students').update({ status }).eq('user_id', userId);
 
       if (error) {
         Swal.fire('Error', 'Failed to update student status', 'error');
@@ -973,7 +978,7 @@
       }
     };
 
-    window.deleteStudent = async function(id) {
+    window.deleteStudent = async function(userId) {
       const result = await Swal.fire({
         title: 'Delete Student?',
         text: 'This will permanently remove the student profile.',
@@ -985,7 +990,7 @@
 
       if (!result.isConfirmed) return;
 
-      const { error } = await supabase.from('students').delete().eq('id', id);
+      const { error } = await supabase.from('students').delete().eq('user_id', userId);
       if (error) {
         Swal.fire('Error', 'Failed to delete student', 'error');
       } else {
@@ -1073,7 +1078,7 @@
     async function loadPayments() {
       const { data, error } = await supabase
         .from('payment_verification')
-        .select('*, students(name, matric_no), events(title)')
+        .select('*, students(first_name, last_name, matric_number), events(title)')
         .order('created_at', { ascending: false });
 
       const tbody = document.getElementById('payments-table-body');
@@ -1085,7 +1090,7 @@
 
       tbody.innerHTML = data.map(p => `
         <tr>
-          <td>${escapeHtml(p.students?.name || 'Unknown')} (${escapeHtml(p.students?.matric_no || 'N/A')})</td>
+          <td>${escapeHtml(p.students?.first_name || '')} ${escapeHtml(p.students?.last_name || '')} (${escapeHtml(p.students?.matric_number || 'N/A')})</td>
           <td>${escapeHtml(p.events?.title || 'N/A')}</td>
           <td>₦${Number(p.amount).toLocaleString()}</td>
           <td><code>${escapeHtml(p.payment_reference)}</code></td>

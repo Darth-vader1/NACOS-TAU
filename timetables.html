@@ -184,7 +184,7 @@
               ${t.description ? `<p class="card-text text-muted small">${escapeHtml(t.description)}</p>` : ''}
               <p class="small text-muted">Uploaded: ${new Date(t.created_at).toLocaleDateString()}</p>
               <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-primary" onclick="previewTimetable('${escapeHtml(t.file_url)}', '${escapeHtml(t.title)}')">
+                <button class="btn btn-sm btn-outline-primary" onclick="window.previewTimetable('${escapeHtml(t.file_url)}', '${escapeHtml(t.title)}')">
                   <i class="bi bi-eye me-1"></i> Preview
                 </button>
                 <a href="${escapeHtml(t.file_url)}" target="_blank" class="btn btn-sm btn-primary" style="background-color: #1b8c0c; border-color: #1b8c0c;">
@@ -197,7 +197,7 @@
       `).join('');
     }
 
-    function previewTimetable(url, title) {
+    window.previewTimetable = function(url, title) {
       document.getElementById('previewModalTitle').textContent = title;
       document.getElementById('previewImage').src = url;
       document.getElementById('downloadBtn').href = url;

@@ -32,104 +32,103 @@ import { supabase } from "../../assets/js/supabase-config.js";
         const pass_value = password.value.trim();
         // console.log(pass_value)
         const loginStudent = async (email, password) => {
+            // Show loading
+            Swal.fire({
+                title: 'Signing In...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+
             const { data, error } = await supabase.auth.signInWithPassword({
               email: email,
               password: password,
             });
 
-          const user = data.user;
-  
-          if (error) {
-              Swal.fire({
-                title: "Error!",
-                text: "User not found. Please signup before attempting to sign in.",
-                icon: "error",
-                confirmButtonText: "Okay",
-              });
-              return;
-          }
-  
-          // Extract metadata
-          const userMeta = user.user_metadata || {};
-          const matric_no = userMeta.matric_no;
-          const full_name = userMeta.full_name;
-          const course = userMeta.course;
-  
-          // Check if student already exists in database
-          const { data: existingStudent, error: checkError } = await supabase
-              .from("students")
-              .select("*")
-              .eq("email", user.email)
-              .single();
-  
-          if (checkError && checkError.code !== "PGRST116") { // Ignore "no rows found" error
-            //   console.error("Error checking student:", checkError);
-              Swal.fire({
-                  title: "Error!",
-                  text: "An error occurred while checking user data.",
+            if (error) {
+                Swal.fire({
+                  title: "Login Failed",
+                  text: error.message || "Invalid credentials. Please signup before attempting to sign in.",
                   icon: "error",
                   confirmButtonText: "Okay",
-              });
-              return;
-          }
-  
-          // If the student doesn't exist, insert their data
-          if (!existingStudent) {
-              const { error: insertError } = await supabase
-                  .from("students")
-                  .insert([{
-                      matric_no: matric_no,
-                      name: full_name,
-                      course: course,
-                      email: user.email,
-                      id: user.id, // Link user to student table
-                      status: 'pending' // Default to pending for new signups too
-                  }]);
-  
-              if (insertError) {
-                  console.error("Insert error:", insertError);
-                  Swal.fire({
-                      title: "Error!",
-                      text: "Failed to save student data.",
-                      icon: "error",
-                      confirmButtonText: "Okay",
-                  });
-                  return;
-              }
+                });
+                return;
+            }
 
-              // Since they just signed up and are pending, we should probably not let them in yet
-              await supabase.auth.signOut();
-              Swal.fire({
-                  title: "Account Pending",
-                  text: "Your account has been created but is pending admin verification. Please check back later.",
-                  icon: "info",
-                  confirmButtonText: "Okay",
-              });
-              return;
-          }
-
-          // Check if student is verified
-          if (existingStudent.status !== 'verified') {
-              await supabase.auth.signOut();
-              Swal.fire({
-                  title: "Access Denied",
-                  text: "Your account is still pending admin verification.",
-                  icon: "warning",
-                  confirmButtonText: "Okay",
-              });
-              return;
-          }
+            const user = data.user;
   
-          // Success - Redirect to dashboard
-          Swal.fire({
-              title: "Success!",
-              text: "Login successful. Redirecting to dashboard...",
-              icon: "success",
-              confirmButtonText: "Okay",
-          }).then(() => {
-              window.location.href = "student-dashboard.html";
-          });
-          
+            // Check if student exists and is approved in database
+            const { data: student, error: checkError } = await supabase
+                .from("students")
+                .select("*")
+                .eq("user_id", user.id)
+                .single();
+  
+            if (checkError) {
+                await supabase.auth.signOut();
+                if (checkError.code === "PGRST116") {
+                    Swal.fire({
+                        title: "Profile Not Found",
+                        text: "Your account exists in Auth but not in our records. Please contact admin.",
+                        icon: "error",
+                        confirmButtonText: "Okay",
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "An error occurred while checking your status.",
+                        icon: "error",
+                        confirmButtonText: "Okay",
+                    });
+                }
+                return;
+            }
+  
+            // Check if student is approved
+            if (student.status === 'pending') {
+                await supabase.auth.signOut();
+                Swal.fire({
+                    title: "Account Pending",
+                    text: "Your account is still pending admin approval. Please check back later.",
+                    icon: "info",
+                    confirmButtonText: "Okay",
+                });
+                return;
+            }
+
+            if (student.status === 'rejected') {
+                await supabase.auth.signOut();
+                Swal.fire({
+                    title: "Access Denied",
+                    text: "Your account has been rejected by the admin. Please contact support.",
+                    icon: "error",
+                    confirmButtonText: "Okay",
+                });
+                return;
+            }
+
+            if (student.status !== 'approved') {
+                await supabase.auth.signOut();
+                Swal.fire({
+                    title: "Access Denied",
+                    text: "Your account is not approved.",
+                    icon: "warning",
+                    confirmButtonText: "Okay",
+                });
+                return;
+            }
+  
+            // Success - Redirect to dashboard
+            Swal.fire({
+                title: "Welcome Back!",
+                text: `Success! Welcome, ${student.first_name}.`,
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = "student-dashboard.html";
+            });
         }
         loginStudent(studentEmail.toLowerCase(), pass_value)
     });

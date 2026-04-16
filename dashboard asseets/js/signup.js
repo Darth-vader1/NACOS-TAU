@@ -73,103 +73,59 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       return;
     }
-    const signUpStudent = async (email, password, full_name, matric_no, course) => {
-      // Check for email and matric number duplicates
-      const { data:existingUser, error:existingUserError } = await supabase
-      .from("students")
-      .select("email, matric_no")
-      .or(`email.eq.${email},matric_no.eq.${matric_no}`);
-
-      if (existingUserError) {
+    const signUpStudent = async (email, password, first_name, last_name, matric_no, course) => {
+      // Show loading
       Swal.fire({
-        title: "Error!",
-        text: "We're unable to access the server at this time. Please try again later.",
-        icon: "error",
-        confirmButtonText: "Okay",
+        title: 'Creating Account...',
+        text: 'Please wait while we set up your profile.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading()
+        }
       });
-      return;
-      }
 
-      // Check if email or matric number already exists
-      if (existingUser && existingUser.length > 0) {
-      const existing = existingUser[0];
+      try {
+        const response = await fetch('/.netlify/functions/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            first_name,
+            last_name,
+            matric_number: matric_no,
+            department: course
+          })
+        });
 
-      if (existing.email === email) {
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Signup failed');
+        }
+
+        Swal.fire({
+          title: "Success!",
+          text: "Signup successful! Your account is pending admin approval. Please check back later.",
+          icon: "success",
+          confirmButtonText: "Okay",
+        }).then(() => {
+          window.location.href = "student-login.html";
+        });
+
+      } catch (error) {
+        console.error("Signup error:", error);
         Swal.fire({
           title: "Error!",
-          text: "A user with this email already exists.",
+          text: error.message || "We're unable to create your account at this time. Please try again later.",
           icon: "error",
           confirmButtonText: "Okay",
         });
-        return;
       }
-
-      if (existing.matric_no === matric_no) {
-        Swal.fire({
-          title: "Error!",
-          text: "A user with this matric number already exists.",
-          icon: "error",
-          confirmButtonText: "Okay",
-        });
-        return;
-      }
-      }
-
-      const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-        full_name: full_name,
-        matric_no: matric_no,
-        course: course,
-        },
-      },
-      });
-
-      if (error) {
-      Swal.fire({
-        title: "Error!",
-        text: "We're unable to create your account at this time. Please try again later.",
-        icon: "error",
-        confirmButtonText: "Okay",
-      });
-      return;
-      }
-
-      const user = data.user;
-
-      const { error: insertError } = await supabase
-      .from("students")
-      .insert([{
-        matric_no: matric_no,
-        name: full_name,
-        course: course,
-        email: email,
-        id: user.id,
-        status: 'pending' // New signups are pending by default
-      }]);
-
-      if (insertError) {
-      Swal.fire({
-        title: "Error!",
-        text: "We're unable to create your account at this time. Please try again later.",
-        icon: "error",
-        confirmButtonText: "Okay",
-      });
-      return;
-      }
-
-      Swal.fire({
-      title: "Success!",
-      text: "Signup successful! Your account is pending admin verification. Please check back later.",
-      icon: "success",
-      confirmButtonText: "Okay",
-      }).then(() => {
-      window.location.href = "student-login.html";
-      });
     };
-    signUpStudent(studentEmail.toLowerCase(), confirm_password.value.trim(), fullName, matricNo.toUpperCase(), course);
+    signUpStudent(studentEmail.toLowerCase(), pass_value, firstName, lastName, matricNo.toUpperCase(), course);
   });
 });
 
