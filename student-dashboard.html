@@ -223,7 +223,7 @@
           <!-- Profile Section -->
           <div class="col-lg-8 ps-lg-5" data-aos="fade-up" data-aos-delay="200" id="profileSection">
             <div class="profile-picture rotating-frame" style="text-align: center;padding-bottom: 20px;">
-              <img src="assets/img/dummy img.jpg" id="displayPicture" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+              <img src="assets/img/tau_logo-removebg-preview.png" class="img-fluidid="displayPicture" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
             </div>
             <div style="display: flex;flex-direction: column;justify-content: center;">
               <h3 style="text-align: center;" id="studentName">Loading...</h3>
@@ -381,6 +381,28 @@
   <!-- Main Dashboard Script -->
   <script type="module">
     import { supabase, checkAuth, signOut } from './assets/js/supabase-config.js';
+
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-NG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
     
     // ============================================
     // AUTHENTICATION CHECK - PROTECTED ROUTE
@@ -469,45 +491,53 @@
     // LOAD QUICK RESOURCES
     // ============================================
     
-    async function loadQuickResources() {
-      const container = document.getElementById('quickResourcesContainer');
-      
-      try {
-        const { data: resources, error } = await supabase
-          .from('academic_resources')
-          .select('*')
-          .limit(4);
+ async function loadQuickResources() {
+    console.log('Loading quick resources...');
+    const container = document.getElementById('quickResourcesContainer');
+    
+    if (!container) return;
+    
+    // Add escapeHtml function if not exists
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    try {
+        const { data, error } = await supabase
+            .from('academic_resources')
+            .select('*')
+            .limit(4);
         
-        if (error) throw error;
-        
-        if (resources && resources.length > 0) {
-          container.innerHTML = resources.map(resource => `
-            <div class="col-lg-3 col-md-6">
-              <a href="${resource.url}" target="_blank" class="text-decoration-none">
-                <div class="quick-resource-card text-center">
-                  <i class="bi bi-link-45deg"></i>
-                  <h4>${resource.title.substring(0, 30)}</h4>
-                </div>
-              </a>
-            </div>
-          `).join('');
-        } else {
-          container.innerHTML = `
-            <div class="col-12 text-center">
-              <p class="text-muted">No resources available yet. Check back soon!</p>
-            </div>
-          `;
+        if (error) {
+            console.error('Error loading resources:', error);
+            container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">Unable to load resources</p></div>';
+            return;
         }
         
-      } catch (error) {
-        console.error('Error loading resources:', error);
-        container.innerHTML = `
-          <div class="col-12 text-center">
-            <p class="text-muted">Unable to load resources at this time.</p>
-          </div>
-        `;
-      }
+        if (data && data.length > 0) {
+            container.innerHTML = data.map(r => `
+                <div class="col-lg-3 col-md-6">
+                    <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                        <div class="quick-resource-card text-center p-3 border rounded">
+                            <i class="bi bi-link-45deg fs-1 text-success"></i>
+                            <h6 class="mt-2">${escapeHtml(r.title.substring(0, 30))}</h6>
+                            <small class="text-muted">${escapeHtml(r.resource_type)}</small>
+                        </div>
+                    </a>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No resources available yet</p></div>';
+        }
+        
+    } catch (err) {
+        console.error('Load resources error:', err);
+        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">Unable to load resources</p></div>';
     }
+}
     
     // ============================================
     // PROFILE PICTURE UPLOAD
