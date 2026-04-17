@@ -1,32 +1,48 @@
-<!DOCTYPE html> 
-<html> 
-<head> 
-    <title>Test Config</title> 
-</head> 
-<body> 
-    <h1>Testing Supabase Config</h1> 
-    <div id="result" style="padding: 20px; font-family: monospace;">Loading...</div> 
-    <script src="config.local.js"></script> 
-    <script type="module"> 
-        import { supabase } from './assets/js/supabase-config.js'; 
-        const result = document.getElementById('result'); 
-        console.log('SUPABASE_URL:', window.SUPABASE_URL); 
-        console.log('supabase client:', supabase); 
-        if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) { 
-            result.innerHTML = '? Config loaded!<br>'; 
-            result.innerHTML += `URL: ${window.SUPABASE_URL}<br>`; 
-            try { 
-                const { data, error } = await supabase 
-                    .from('resource_categories') 
-                    .select('count', { count: 'exact', head: true }); 
-                if (error) throw error; 
-                result.innerHTML += '? Supabase connection successful!'; 
-            } catch (err) { 
-                result.innerHTML += `? Connection failed: ${err.message}`; 
-            } 
-        } else { 
-            result.innerHTML = '? Config NOT loaded'; 
-        } 
-    </script> 
-</body> 
-</html> 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="config.local.js"></script>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="result">Testing...</div>
+    
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+        
+        const result = document.getElementById('result');
+        
+        async function test() {
+            try {
+                result.innerHTML = 'Connecting to Supabase...';
+                
+                // Test simple query
+                const { data, error } = await supabase
+                    .from('resource_categories')
+                    .select('count', { count: 'exact', head: true });
+                
+                if (error) throw error;
+                
+                result.innerHTML = '✅ Supabase is working!<br>Try logging in now.';
+                result.style.color = 'green';
+                
+                // Check if user is logged in
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    result.innerHTML += '<br>✅ You are already logged in!';
+                } else {
+                    result.innerHTML += '<br>⚠️ You are not logged in. Please login.';
+                }
+                
+            } catch (err) {
+                result.innerHTML = `❌ Error: ${err.message}`;
+                result.style.color = 'red';
+            }
+        }
+        
+        test();
+    </script>
+</body>
+</html>
