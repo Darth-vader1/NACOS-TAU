@@ -310,6 +310,9 @@
     
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+    console.log('Form submitted!');  // ← ADD THIS
+    console.log('Email:', emailInput.value);  // ← ADD THIS
+    console.log('Password length:', passwordInput.value.length);  // ← ADD THIS
       
       const email = emailInput.value.trim().toLowerCase();
       const password = passwordInput.value;

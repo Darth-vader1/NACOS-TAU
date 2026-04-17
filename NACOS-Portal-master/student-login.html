@@ -23,12 +23,14 @@
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  
 
   
 
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   
   <style>
     .toggle-password {
@@ -246,6 +248,7 @@
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="config.local.js"></script>
+  
 
   <script type="module" src="assets/js/supabase-config.js"></script>
   <!-- Main JS File -->
@@ -347,6 +350,9 @@
     // Form submission handler
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+    console.log('Form submitted!');  // ← ADD THIS
+    console.log('Email:', emailInput.value);  // ← ADD THIS
+    console.log('Password length:', passwordInput.value.length);  // ← ADD THIS
       
       // Get and sanitize inputs
       const email = emailInput.value.trim().toLowerCase();

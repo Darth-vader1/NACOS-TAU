@@ -1,0 +1,32 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <title>Test Config</title> 
+</head> 
+<body> 
+    <h1>Testing Supabase Config</h1> 
+    <div id="result" style="padding: 20px; font-family: monospace;">Loading...</div> 
+    <script src="config.local.js"></script> 
+    <script type="module"> 
+        import { supabase } from './assets/js/supabase-config.js'; 
+        const result = document.getElementById('result'); 
+        console.log('SUPABASE_URL:', window.SUPABASE_URL); 
+        console.log('supabase client:', supabase); 
+        if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) { 
+            result.innerHTML = '? Config loaded!<br>'; 
+            result.innerHTML += `URL: ${window.SUPABASE_URL}<br>`; 
+            try { 
+                const { data, error } = await supabase 
+                    .from('resource_categories') 
+                    .select('count', { count: 'exact', head: true }); 
+                if (error) throw error; 
+                result.innerHTML += '? Supabase connection successful!'; 
+            } catch (err) { 
+                result.innerHTML += `? Connection failed: ${err.message}`; 
+            } 
+        } else { 
+            result.innerHTML = '? Config NOT loaded'; 
+        } 
+    </script> 
+</body> 
+</html> 
