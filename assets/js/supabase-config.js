@@ -1,19 +1,15 @@
-// assets/js/supabase-config.js
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-// ============================================
-// PRODUCTION-READY SUPABASE CONFIGURATION
-// ============================================
+// Use environment variables (Netlify) or window (local)
+const SUPABASE_URL = process.env.SUPABASE_URL || window.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
 
-// Validate configuration
-if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.error('❌ Supabase configuration missing!');
-    console.error('Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables');
     throw new Error('Supabase configuration is required');
 }
 
-const SUPABASE_URL = window.SUPABASE_URL;
-const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY;
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Create client with production settings
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {

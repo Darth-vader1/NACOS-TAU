@@ -31,3 +31,4 @@ desktop.ini
  
 # Logs 
 *.log 
+config.local.js 
