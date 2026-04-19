@@ -7,8 +7,8 @@
 // For static sites, the Anon Key is safe to expose as long as RLS is properly configured.
 // Replace these values with your actual Supabase credentials.
 
-window.SUPABASE_URL = "https://your-project-id.supabase.co";
-window.SUPABASE_ANON_KEY = "your-anon-key-here";
+window.SUPABASE_URL = "https://gqhhvbnbbmstfrhtegsl.supabase.co";
+window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaGh2Ym5iYm1zdGZyaHRlZ3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzkwOTcsImV4cCI6MjA5MTc1NTA5N30.cSjwB9V-jY3yekNz0wS8EdlKG79lQr-SYPRj20eGicg";
 
 // Optional: Analytics or other global settings
 window.APP_CONFIG = {
