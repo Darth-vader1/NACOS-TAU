@@ -187,15 +187,15 @@
               <label>Department:</label>
               <div style="padding: 2%;display: flex; gap: 20px; flex-wrap: wrap;">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="course" id="soft_eng" value="Software Engineering" required>
+                  <input class="form-check-input" type="radio" name="department" id="soft_eng" value="Software Engineering" required>
                   <label class="form-check-label" for="soft_eng">Software Engineering</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="course" id="comp_sci" value="Computer Science">
+                  <input class="form-check-input" type="radio" name="department" id="comp_sci" value="Computer Science">
                   <label class="form-check-label" for="comp_sci">Computer Science</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="course" id="cyber_sec" value="Cyber Security">
+                  <input class="form-check-input" type="radio" name="department" id="cyber_sec" value="Cyber Security">
                   <label class="form-check-label" for="cyber_sec">Cyber Security</label>
                 </div>
               </div>
@@ -203,14 +203,14 @@
             
             <div class="form-group">
               <label for="email">Student Email:</label>
-              <input type="email" class="form-control" id="email" placeholder="Enter student email (e.g., name@tau.edu.ng)" required autocomplete="email">
+              <input type="email" class="form-control" id="email" placeholder="Enter student email (e.g., name@st.tau.edu.ng)" required autocomplete="email">
               <small class="form-text text-muted">Must be your official @st.tau.edu.ng email address</small>
             </div>
             
             <div class="form-group">
               <div class="password-container">
                 <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" placeholder="Enter password (min 8 characters)" required autocomplete="new-password">
+                <input type="password" class="form-control" id="password" placeholder="Enter password (min 6 characters)" required autocomplete="new-password">
                 <button id="toggle-password" class="toggle-password" type="button" aria-label="Toggle password visibility">
                   <i class="bi bi-eye-slash"></i>
                 </button>
@@ -294,12 +294,12 @@
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/js/config.js"></script>
-  <script type="module" src="assets/js/supabase-config.js"></script>
-  <!-- Main JS File -->
-  <script src="dashboard assets/js/main.js"></script>
   
-  <!-- Signup Script -->
+  <!-- Config and Supabase -->
+  <script src="config.local.js"></script>
+  <script type="module" src="assets/js/supabase-config.js"></script>
+  
+  <!-- Signup Script (Direct Supabase - No Netlify Function) -->
   <script type="module">
     import { supabase } from './assets/js/supabase-config.js';
     
@@ -319,8 +319,6 @@
     // ============================================
     
     function validateMatricNumber(matric) {
-      // Adjust regex based on your university's matric number format
-      // Example: 23/10MSC014, 2023/1234, etc.
       const matricRegex = /^[0-9]{2}\/[0-9]{2}[A-Z]{3}[0-9]{3}$/;
       return matricRegex.test(matric);
     }
@@ -331,6 +329,7 @@
     }
     
     function validatePasswordStrength(password) {
+      if (password.length < 6) return { level: 'weak', message: 'Password must be at least 6 characters' };
       let strength = 0;
       if (password.length >= 8) strength++;
       if (password.match(/[a-z]+/)) strength++;
@@ -338,7 +337,6 @@
       if (password.match(/[0-9]+/)) strength++;
       if (password.match(/[$@#&!]+/)) strength++;
       
-      if (password.length < 8) return { level: 'weak', message: 'Password must be at least 8 characters' };
       if (strength <= 2) return { level: 'weak', message: 'Weak password' };
       if (strength === 3) return { level: 'medium', message: 'Medium password' };
       return { level: 'strong', message: 'Strong password' };
@@ -347,62 +345,16 @@
     function validateForm() {
       let isValid = true;
       
-      // Validate first name
-      if (!firstNameInput.value.trim()) {
-        showError(firstNameInput, 'First name is required');
-        isValid = false;
-      } else {
-        clearError(firstNameInput);
-      }
+      if (!firstNameInput.value.trim()) { showError(firstNameInput, 'First name is required'); isValid = false; } else { clearError(firstNameInput); }
+      if (!lastNameInput.value.trim()) { showError(lastNameInput, 'Last name is required'); isValid = false; } else { clearError(lastNameInput); }
+      if (!validateMatricNumber(matricNoInput.value.trim())) { showError(matricNoInput, 'Invalid matric number format'); isValid = false; } else { clearError(matricNoInput); }
+      if (!validateEmail(emailInput.value.trim())) { showError(emailInput, 'Please use your valid @st.tau.edu.ng email'); isValid = false; } else { clearError(emailInput); }
       
-      // Validate last name
-      if (!lastNameInput.value.trim()) {
-        showError(lastNameInput, 'Last name is required');
-        isValid = false;
-      } else {
-        clearError(lastNameInput);
-      }
-      
-      // Validate matric number
-      if (!validateMatricNumber(matricNoInput.value.trim())) {
-        showError(matricNoInput, 'Invalid matric number format');
-        isValid = false;
-      } else {
-        clearError(matricNoInput);
-      }
-      
-      // Validate email
-      if (!validateEmail(emailInput.value.trim())) {
-        showError(emailInput, 'Please use your valid @st.tau.edu.ng email');
-        isValid = false;
-      } else {
-        clearError(emailInput);
-      }
-      
-      // Validate password
       const passwordStrength = validatePasswordStrength(passwordInput.value);
-      if (passwordStrength.level === 'weak') {
-        showError(passwordInput, passwordStrength.message);
-        isValid = false;
-      } else {
-        clearError(passwordInput);
-      }
+      if (passwordStrength.level === 'weak') { showError(passwordInput, passwordStrength.message); isValid = false; } else { clearError(passwordInput); }
       
-      // Validate password match
-      if (passwordInput.value !== confirmPasswordInput.value) {
-        showError(confirmPasswordInput, 'Passwords do not match');
-        isValid = false;
-      } else {
-        clearError(confirmPasswordInput);
-      }
-      
-      // Validate terms
-      if (!termsCheckbox.checked) {
-        showError(termsCheckbox, 'You must agree to the terms');
-        isValid = false;
-      } else {
-        clearError(termsCheckbox);
-      }
+      if (passwordInput.value !== confirmPasswordInput.value) { showError(confirmPasswordInput, 'Passwords do not match'); isValid = false; } else { clearError(confirmPasswordInput); }
+      if (!termsCheckbox.checked) { showError(termsCheckbox, 'You must agree to the terms'); isValid = false; } else { clearError(termsCheckbox); }
       
       return isValid;
     }
@@ -459,29 +411,22 @@
       icon.classList.toggle('bi-eye-slash');
     });
     
-    // Form submission
+    // ============================================
+    // FORM SUBMISSION - DIRECT SUPABASE (NO NETLIFY)
+    // ============================================
+    
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       if (!validateForm()) {
-        await Swal.fire({
-          title: 'Validation Error',
-          text: 'Please check all fields and try again.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
+        await Swal.fire({ title: 'Validation Error', text: 'Please check all fields and try again.', icon: 'warning', confirmButtonText: 'OK' });
         return;
       }
       
-      // Get selected course
-      const selectedCourse = document.querySelector('input[name="course"]:checked');
-      if (!selectedCourse) {
-        await Swal.fire({
-          title: 'Missing Information',
-          text: 'Please select your degree program.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
+      // Get selected department
+      const selectedDepartment = document.querySelector('input[name="department"]:checked');
+      if (!selectedDepartment) {
+        await Swal.fire({ title: 'Missing Information', text: 'Please select your department.', icon: 'warning', confirmButtonText: 'OK' });
         return;
       }
       
@@ -489,50 +434,67 @@
       const email = emailInput.value.trim().toLowerCase();
       const password = passwordInput.value;
       const matricNo = matricNoInput.value.trim().toUpperCase();
-      const department = selectedCourse.value;
+      const department = selectedDepartment.value;
       
       // Show loading state
       signupButton.disabled = true;
       signupButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating account...';
       
       try {
-        // Use Netlify function for signup to ensure student profile is created
-        const response = await fetch('/.netlify/functions/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email,
-            password,
-            first_name: firstNameInput.value.trim(),
-            last_name: lastNameInput.value.trim(),
-            matric_number: matricNo,
-            department: department
-          })
+        // Create user in Supabase Auth
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              full_name: fullName,
+              matric_no: matricNo,
+              department: department
+            }
+          }
         });
         
-        const result = await response.json();
+        if (signUpError) throw signUpError;
         
-        if (!response.ok) {
-          throw new Error(result.error || 'Signup failed');
+        if (authData.user) {
+          // Add to students table
+          const { error: insertError } = await supabase
+            .from('students')
+            .insert({
+              user_id: authData.user.id,
+              matric_no: matricNo,
+              name: fullName,
+              email: email,
+              department: department,
+              course: department,
+              status: 'pending'
+            });
+          
+          if (insertError) {
+            console.error('Insert error:', insertError);
+          }
+          
+          await Swal.fire({
+            title: 'Registration Successful!',
+            text: 'Your account has been created and is pending admin approval. You will be able to log in once an admin verifies your details.',
+            icon: 'success',
+            confirmButtonText: 'Go to Login'
+          });
+          
+          window.location.href = 'student-login.html';
         }
-        
-        // Success
-        await Swal.fire({
-          title: 'Registration Successful!',
-          text: 'Your account has been created and is pending admin approval. You will be able to log in once an admin verifies your details.',
-          icon: 'success',
-          confirmButtonText: 'Go to Login'
-        });
-        
-        window.location.href = 'student-login.html';
         
       } catch (err) {
         console.error('Signup error:', err);
+        
+        let errorMessage = err.message || 'An error occurred during registration.';
+        if (errorMessage.includes('User already registered')) {
+          errorMessage = 'This email is already registered. Please login instead.';
+        }
+        
         await Swal.fire({
           title: 'Registration Failed',
-          text: err.message || 'An error occurred during registration. Please try again.',
+          text: errorMessage,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -544,5 +506,4 @@
   </script>
 
 </body>
-
 </html>
