@@ -168,6 +168,77 @@ INSERT INTO resource_categories (name, description) VALUES
     ('AI/ML', 'Artificial Intelligence and Machine Learning resources')
 ON CONFLICT DO NOTHING;
 
+-- Table: audit_logs
+-- Stores administrative actions for auditing
+-- =====================================================
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    admin_id UUID REFERENCES admin_users(id),
+    action VARCHAR(100) NOT NULL,
+    entity_type VARCHAR(50),
+    entity_id UUID,
+    details JSONB DEFAULT '{}',
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Table: timetables
+-- Stores timetable information
+-- =====================================================
+CREATE TABLE IF NOT EXISTS timetables (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    version VARCHAR(50) NOT NULL,
+    description TEXT,
+    file_url TEXT NOT NULL,
+    is_current BOOLEAN DEFAULT FALSE,
+    uploaded_by UUID REFERENCES admin_users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for new tables
+ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE timetables ENABLE ROW LEVEL SECURITY;
+
+-- Audit logs policies
+CREATE POLICY "Admins can view audit logs" ON audit_logs
+    FOR SELECT USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+-- Timetables policies
+CREATE POLICY "Anyone can view current timetables" ON timetables
+    FOR SELECT USING (is_current = true OR EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+CREATE POLICY "Admins can manage timetables" ON timetables
+    FOR ALL USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+-- Table: career_paths
+-- Stores information about career paths for computing students
+-- =====================================================
+CREATE TABLE IF NOT EXISTS career_paths (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    key VARCHAR(50) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    overview TEXT,
+    skills TEXT[],
+    tools TEXT[],
+    resources JSONB DEFAULT '[]',
+    uploaded_by UUID REFERENCES admin_users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for new tables
+ALTER TABLE career_paths ENABLE ROW LEVEL SECURITY;
+
+-- Career paths policies
+CREATE POLICY "Anyone can view career paths" ON career_paths
+    FOR SELECT USING (true);
+
+CREATE POLICY "Admins can manage career paths" ON career_paths
+    FOR ALL USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
 -- =====================================================
 -- ADMIN SETUP INSTRUCTIONS
 -- =====================================================

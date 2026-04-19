@@ -7,7 +7,6 @@
   <title>Admin Dashboard - NACOS | Thomas Adewumi University</title>
   <meta name="description" content="NACOS Admin Dashboard - Content Management System">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="keywords" content="">
 
   <!-- Favicons -->
   <link href="assets/img/tau_logo-removebg-preview.png" rel="icon">
@@ -200,6 +199,20 @@
       border-radius: 20px;
       font-size: 12px;
       z-index: 999;
+    }
+    
+    .logout-btn {
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background-color: #c82333;
     }
     
     @keyframes pulse {
@@ -568,7 +581,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Matric No</th>
-                    <th>Course</th>
+                    <th>Department</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -587,219 +600,7 @@
   <!-- Session Timer -->
   <div class="session-timer" id="sessionTimer">Session active</div>
 
-  <!-- Modals -->
-  <div class="modal fade" id="addQuestionModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Past Question</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <form id="addQuestionForm">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Course Code *</label>
-              <input type="text" class="form-control" id="q-course-code" required placeholder="e.g., CSC101">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Course Name *</label>
-              <input type="text" class="form-control" id="q-course-name" required placeholder="e.g., Introduction to Computing">
-            </div>
-            <div class="row mb-3">
-              <div class="col-6">
-                <label class="form-label">Level *</label>
-                <select class="form-select" id="q-level" required>
-                  <option value="">Select Level</option>
-                  <option value="100">100 Level</option>
-                  <option value="200">200 Level</option>
-                  <option value="300">300 Level</option>
-                  <option value="400">400 Level</option>
-                  <option value="500">500 Level</option>
-                </select>
-              </div>
-              <div class="col-6">
-                <label class="form-label">Semester *</label>
-                <select class="form-select" id="q-semester" required>
-                  <option value="">Select Semester</option>
-                  <option value="Harmattan">Harmattan</option>
-                  <option value="Rain">Rain</option>
-                </select>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Title *</label>
-              <input type="text" class="form-control" id="q-title" required placeholder="e.g., 2023 Final Exam">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">File (PDF/Image) *</label>
-              <input type="file" class="form-control" id="q-file" accept=".pdf,.jpg,.jpeg,.png" required>
-              <small class="text-muted">Max size: 5MB. Allowed: PDF, JPG, PNG</small>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-admin">Upload</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="addTimetableModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Upload Timetable</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <form id="addTimetableForm">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Title *</label>
-              <input type="text" class="form-control" id="t-title" required placeholder="e.g., 2024/2025 Academic Calendar">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Version *</label>
-              <input type="text" class="form-control" id="t-version" required placeholder="e.g., V1.0">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" id="t-description" rows="2" placeholder="Optional description"></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Set as Current Version</label>
-              <select class="form-select" id="t-current">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">File (PDF/Image) *</label>
-              <input type="file" class="form-control" id="t-file" accept=".pdf,.jpg,.jpeg,.png" required>
-              <small class="text-muted">Max size: 5MB. Allowed: PDF, JPG, PNG</small>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-admin">Upload</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="addResourceModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Academic Resource</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <form id="addResourceForm">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Title *</label>
-              <input type="text" class="form-control" id="r-title" required placeholder="e.g., W3Schools JavaScript Tutorial">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Type *</label>
-              <select class="form-select" id="r-type" required>
-                <option value="">Select Type</option>
-                <option value="Tutorial">Tutorial</option>
-                <option value="Documentation">Documentation</option>
-                <option value="Course">Course</option>
-                <option value="Book">Book</option>
-                <option value="Tool">Tool</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">URL *</label>
-              <input type="url" class="form-control" id="r-url" required placeholder="https://example.com">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Category</label>
-              <select class="form-select" id="r-category">
-                <option value="">Select Category</option>
-                <option value="Programming">Programming</option>
-                <option value="Database">Database</option>
-                <option value="Networking">Networking</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Web Development">Web Development</option>
-                <option value="AI/ML">AI/ML</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" id="r-description" rows="2" placeholder="Optional description"></textarea>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-admin">Add Resource</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="addCareerPathModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add Career Path</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <form id="addCareerPathForm">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Path Key *</label>
-                  <input type="text" class="form-control" id="cp-key" required placeholder="e.g., backend" pattern="[a-z-]+">
-                  <small class="text-muted">Lowercase letters and hyphens only</small>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Title *</label>
-                  <input type="text" class="form-control" id="cp-title" required placeholder="e.g., Backend Engineering">
-                </div>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Overview *</label>
-              <textarea class="form-control" id="cp-overview" rows="3" required placeholder="Brief description of this career path"></textarea>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Skills (comma-separated)</label>
-                  <input type="text" class="form-control" id="cp-skills" placeholder="e.g., Python, SQL, Git">
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="mb-3">
-                  <label class="form-label">Tools (comma-separated)</label>
-                  <input type="text" class="form-control" id="cp-tools" placeholder="e.g., Node.js, PostgreSQL">
-                </div>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">External Resources (JSON format)</label>
-              <textarea class="form-control" id="cp-resources" rows="3" placeholder='[{"name": "Resource Name", "url": "https://example.com"}]'></textarea>
-              <small class="text-muted">Enter valid JSON array of resources</small>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-admin">Add Career Path</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
+  <!-- Add Event Modal -->
   <div class="modal fade" id="addEventModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
@@ -824,6 +625,7 @@
                     <option value="workshop">Workshop</option>
                     <option value="seminar">Seminar</option>
                     <option value="social">Social</option>
+                    <option value="payment">Payment</option>
                   </select>
                 </div>
               </div>
@@ -880,8 +682,9 @@
               <textarea class="form-control" id="ev-payment-details" rows="2" placeholder="Bank name, account number, etc."></textarea>
             </div>
             <div class="mb-3">
-              <label class="form-label">Event Image URL (optional)</label>
-              <input type="url" class="form-control" id="ev-image" placeholder="https://example.com/image.jpg">
+              <label class="form-label">Event Image (optional)</label>
+              <input type="file" class="form-control" id="ev-image" accept="image/jpeg,image/png,image/jpg,image/webp">
+              <small class="text-muted">Max size: 2MB. Allowed: JPG, PNG, WebP</small>
             </div>
           </div>
           <div class="modal-footer">
@@ -893,1098 +696,731 @@
     </div>
   </div>
 
-  <!-- Vendor JS -->
+  <!-- Other Modals (Add Question, Timetable, Resource, Career Path) remain the same -->
+  <div class="modal fade" id="addQuestionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Past Question</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addQuestionForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Course Code *</label>
+              <input type="text" class="form-control" id="q-course-code" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Course Name *</label>
+              <input type="text" class="form-control" id="q-course-name" required>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <label class="form-label">Level</label>
+                <select class="form-select" id="q-level">
+                  <option value="100">100 Level</option>
+                  <option value="200">200 Level</option>
+                  <option value="300">300 Level</option>
+                  <option value="400">400 Level</option>
+                  <option value="500">500 Level</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Semester</label>
+                <select class="form-select" id="q-semester">
+                  <option value="Harmattan">Harmattan</option>
+                  <option value="Rain">Rain</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Title *</label>
+              <input type="text" class="form-control" id="q-title" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">File (PDF/Image)</label>
+              <input type="file" class="form-control" id="q-file" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-admin">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addTimetableModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Timetable</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addTimetableForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title *</label>
+              <input type="text" class="form-control" id="t-title" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Version *</label>
+              <input type="text" class="form-control" id="t-version" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="t-description" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Set as Current</label>
+              <select class="form-select" id="t-current">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">File (PDF/Image)</label>
+              <input type="file" class="form-control" id="t-file" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-admin">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addResourceModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Resource</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addResourceForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title *</label>
+              <input type="text" class="form-control" id="r-title" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select class="form-select" id="r-type">
+                <option value="Tutorial">Tutorial</option>
+                <option value="Documentation">Documentation</option>
+                <option value="Course">Course</option>
+                <option value="Book">Book</option>
+                <option value="Tool">Tool</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">URL *</label>
+              <input type="url" class="form-control" id="r-url" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="r-category">
+                <option value="">Select</option>
+                <option value="Programming">Programming</option>
+                <option value="Database">Database</option>
+                <option value="Networking">Networking</option>
+                <option value="Web Development">Web Development</option>
+                <option value="AI/ML">AI/ML</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" id="r-description" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-admin">Add Resource</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addCareerPathModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Career Path</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addCareerPathForm">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">Path Key</label>
+                <input type="text" class="form-control" id="cp-key" required placeholder="e.g., backend">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" id="cp-title" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Overview</label>
+              <textarea class="form-control" id="cp-overview" rows="2" required></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">Skills (comma-separated)</label>
+                <input type="text" class="form-control" id="cp-skills">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Tools (comma-separated)</label>
+                <input type="text" class="form-control" id="cp-tools">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">External Resources (JSON)</label>
+              <textarea class="form-control" id="cp-resources" rows="2" placeholder='[{"name":"Resource","url":"https://..."}]'></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-admin">Add Career Path</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/js/main.js"></script>
-  <script src="config.local.js"></script>
-  <script type="module" src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/config.js"></script>
 
-
-
-  <!-- Main Admin Script -->
   <script type="module">
     import { supabase, requireAdmin, checkAuth, signOut } from './assets/js/supabase-config.js';
 
     // ============================================
-    // CONFIGURATION
+    // UTILITY FUNCTIONS
     // ============================================
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-    const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
-
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-NG');
+    }
+    
     // ============================================
-    // STATE VARIABLES
+    // SESSION TIMEOUT
     // ============================================
-    let currentAdmin = null;
+    
     let sessionTimeout;
-    let actionLimits = new Map();
-
-    // ============================================
-    // FILE VALIDATION
-    // ============================================
-    function validateFile(file, maxSize = MAX_FILE_SIZE) {
-        if (!file) return { valid: false, error: 'No file selected' };
-        
-        if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-            return { valid: false, error: 'Invalid file type. Only PDF, JPG, and PNG are allowed.' };
-        }
-        
-        if (file.size > maxSize) {
-            return { valid: false, error: `File too large. Maximum size is ${maxSize / 1024 / 1024}MB.` };
-        }
-        
-        const dangerousExtensions = ['.exe', '.bat', '.sh', '.cmd', '.php', '.js', '.html'];
-        const fileName = file.name.toLowerCase();
-        if (dangerousExtensions.some(ext => fileName.endsWith(ext))) {
-            return { valid: false, error: 'Dangerous file type detected.' };
-        }
-        
-        return { valid: true };
+    
+    function resetSessionTimeout() {
+      clearTimeout(sessionTimeout);
+      const timerDiv = document.getElementById('sessionTimer');
+      if (timerDiv) timerDiv.textContent = 'Session active';
+      
+      sessionTimeout = setTimeout(async () => {
+        await Swal.fire({
+          title: 'Session Expired',
+          text: 'Your session has expired due to inactivity.',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        await signOut();
+      }, 30 * 60 * 1000);
     }
-
-    // ============================================
-    // RATE LIMITING
-    // ============================================
-    function checkActionLimit(action, limit = 10, windowMs = 60000) {
-        const now = Date.now();
-        const minuteKey = Math.floor(now / windowMs);
-        const key = `${action}_${minuteKey}`;
-        
-        const actions = actionLimits.get(key) || [];
-        const recentActions = actions.filter(time => now - time < windowMs);
-        
-        if (recentActions.length >= limit) {
-            throw new Error(`Too many ${action} actions. Please wait a moment.`);
-        }
-        
-        recentActions.push(now);
-        actionLimits.set(key, recentActions);
-        return true;
-    }
-
-    // ============================================
-    // CSRF PROTECTION
-    // ============================================
-    function generateCSRFToken() {
-        const token = crypto.randomUUID();
-        sessionStorage.setItem('csrf_token', token);
-        return token;
-    }
-
-    function verifyCSRFToken(token) {
-        const storedToken = sessionStorage.getItem('csrf_token');
-        if (!storedToken || storedToken !== token) {
-            throw new Error('CSRF token validation failed');
-        }
-        return true;
-    }
-
-    const csrfToken = generateCSRFToken();
-
+    
+    ['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
+      document.addEventListener(event, resetSessionTimeout);
+    });
+    
     // ============================================
     // AUDIT LOGGING
     // ============================================
+    
     async function logAdminAction(action, entityType, entityId, details = {}) {
+      try {
+        const session = await checkAuth();
+        if (!session) return;
+        
+        const { data: adminData } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        let ipAddress = null;
         try {
-            const session = await checkAuth();
-            if (!session) return;
-            
-            const { data: adminData } = await supabase
-                .from('admin_users')
-                .select('id')
-                .eq('user_id', session.user.id)
-                .single();
-            
-            // Get IP address
-            let ipAddress = null;
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                ipAddress = ipData.ip;
-            } catch (e) {
-                console.warn('Could not fetch IP');
-            }
-            
-            await supabase.from('audit_logs').insert({
-                admin_id: adminData?.id,
-                action: action,
-                entity_type: entityType,
-                entity_id: entityId,
-                details: details,
-                ip_address: ipAddress,
-                user_agent: navigator.userAgent
-            });
-        } catch (error) {
-            console.error('Audit log failed:', error);
-        }
-    }
-
-    // ============================================
-    // SESSION MANAGEMENT
-    // ============================================
-    function resetSessionTimeout() {
-        clearTimeout(sessionTimeout);
-        const timerDiv = document.getElementById('sessionTimer');
-        timerDiv.textContent = 'Session active';
-        timerDiv.style.background = 'rgba(0,0,0,0.7)';
+          const ipRes = await fetch('https://api.ipify.org?format=json');
+          const ipData = await ipRes.json();
+          ipAddress = ipData.ip;
+        } catch (e) {}
         
-        sessionTimeout = setTimeout(async () => {
-            const timerDiv = document.getElementById('sessionTimer');
-            timerDiv.textContent = 'Session expired - redirecting...';
-            timerDiv.style.background = 'rgba(220,53,69,0.9)';
-            
-            await Swal.fire({
-                title: 'Session Expired',
-                text: 'Your session has expired due to inactivity. Please log in again.',
-                icon: 'warning',
-                confirmButtonText: 'OK',
-                allowOutsideClick: false
-            });
-            await signOut();
-        }, SESSION_TIMEOUT);
-        
-        // Update timer display
-        let timeLeft = SESSION_TIMEOUT / 1000;
-        const timerInterval = setInterval(() => {
-            if (timeLeft <= 0 || !sessionStorage.getItem('adminSession')) {
-                clearInterval(timerInterval);
-                return;
-            }
-            timeLeft--;
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerDiv.textContent = `Session: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }, 1000);
-    }
-
-    // Reset timeout on user activity
-    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
-        document.addEventListener(event, resetSessionTimeout);
-    });
-
-    // ============================================
-    // SECURE JSON PARSING
-    // ============================================
-    function secureJSONParse(jsonString) {
-        if (!jsonString.trim()) return [];
-        
-        try {
-            const parsed = JSON.parse(jsonString);
-            if (!Array.isArray(parsed)) {
-                throw new Error('Resources must be an array');
-            }
-            
-            parsed.forEach((resource, index) => {
-                if (!resource.name || typeof resource.name !== 'string') {
-                    throw new Error(`Resource ${index + 1} missing valid name`);
-                }
-                if (!resource.url || typeof resource.url !== 'string') {
-                    throw new Error(`Resource ${index + 1} missing valid URL`);
-                }
-                try {
-                    new URL(resource.url);
-                } catch {
-                    throw new Error(`Resource ${index + 1} has invalid URL`);
-                }
-            });
-            
-            return parsed;
-        } catch (e) {
-            throw new Error(`Invalid JSON format: ${e.message}`);
-        }
-    }
-
-    // ============================================
-    // INITIALIZATION
-    // ============================================
-    document.addEventListener('DOMContentLoaded', async function() {
-        const isAdmin = await requireAdmin();
-        if (!isAdmin) return;
-        
-        resetSessionTimeout();
-        
-        await loadDashboardStats();
-        await loadPastQuestions();
-        await loadTimetables();
-        await loadResources();
-        await loadCareerPaths();
-        await loadEvents();
-        await loadPayments();
-        await loadStudents();
-        
-        initNavigation();
-        initForms();
-        initLogout();
-        initStudentFilters();
-    });
-
-    // ============================================
-    // NAVIGATION
-    // ============================================
-    function initNavigation() {
-        document.querySelectorAll('.nav-link[data-section]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const section = this.dataset.section;
-                showSection(section);
-            });
+        await supabase.from('audit_logs').insert({
+          admin_id: adminData?.id,
+          action: action,
+          entity_type: entityType,
+          entity_id: entityId,
+          details: details,
+          ip_address: ipAddress,
+          user_agent: navigator.userAgent
         });
-        
-        document.getElementById('menu-toggle')?.addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
+      } catch (error) {
+        console.error('Audit log failed:', error);
+      }
     }
-
-    function showSection(section) {
-        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        
-        const sectionEl = document.getElementById(`${section}-section`);
-        if (sectionEl) sectionEl.style.display = 'block';
-        
-        const navLink = document.querySelector(`.nav-link[data-section="${section}"]`);
-        if (navLink) navLink.classList.add('active');
-        
-        const titleMap = {
-            'dashboard': 'Dashboard',
-            'past-questions': 'Past Questions',
-            'timetables': 'Timetables',
-            'resources': 'Academic Resources',
-            'career-paths': 'Career Paths',
-            'events': 'Events',
-            'payments': 'Payment Verifications',
-            'students': 'Student Verification'
-        };
-        document.getElementById('page-title').textContent = titleMap[section] || section;
-    }
-
+    
     // ============================================
     // DASHBOARD STATS
     // ============================================
+    
     async function loadDashboardStats() {
-        try {
-            const [questions, timetables, resources, students] = await Promise.all([
-                supabase.from('past_questions').select('id', { count: 'exact', head: true }),
-                supabase.from('timetables').select('id', { count: 'exact', head: true }),
-                supabase.from('academic_resources').select('id', { count: 'exact', head: true }),
-                supabase.from('students').select('id', { count: 'exact', head: true }).eq('status', 'pending')
-            ]);
-            
-            document.getElementById('stat-questions').textContent = questions.count || 0;
-            document.getElementById('stat-timetables').textContent = timetables.count || 0;
-            document.getElementById('stat-resources').textContent = resources.count || 0;
-            document.getElementById('stat-students').textContent = students.count || 0;
-        } catch (error) {
-            console.error('Error loading stats:', error);
-        }
-    }
-
-    // ============================================
-    // PAST QUESTIONS
-    // ============================================
-    async function loadPastQuestions() {
-        const { data, error } = await supabase
-            .from('past_questions')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        const tbody = document.getElementById('questions-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No past questions yet</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = data.map(q => `
-            <tr>
-                <td><strong>${escapeHtml(q.course_code)}</strong></td>
-                <td>${escapeHtml(q.course_name)}</td>
-                <td><span class="badge-category">${q.level} Level</span></td>
-                <td>${q.semester}</td>
-                <td><a href="${escapeHtml(q.file_url)}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a></td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deletePastQuestion('${q.id}')"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    window.deletePastQuestion = async function(id) {
-        const result = await Swal.fire({
-            title: 'Delete Past Question?',
-            text: 'This action cannot be undone and will be logged.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Delete'
-        });
-        
-        if (!result.isConfirmed) return;
-        
-        const { data: item } = await supabase
-            .from('past_questions')
-            .select('course_code, course_name')
-            .eq('id', id)
-            .single();
-        
-        const { error } = await supabase.from('past_questions').delete().eq('id', id);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to delete', 'error');
-        } else {
-            await logAdminAction('DELETE', 'past_question', id, {
-                course_code: item?.course_code,
-                course_name: item?.course_name
-            });
-            Swal.fire('Deleted', 'Past question removed', 'success');
-            loadPastQuestions();
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // TIMETABLES
-    // ============================================
-    async function loadTimetables() {
-        const { data, error } = await supabase
-            .from('timetables')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        const tbody = document.getElementById('timetables-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No timetables yet</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = data.map(t => `
-            <tr>
-                <td>${escapeHtml(t.title)}</td>
-                <td><span class="badge-category">${escapeHtml(t.version)}</span></td>
-                <td>${t.is_current ? '<span class="badge bg-success">Current</span>' : ''}</td>
-                <td><a href="${escapeHtml(t.file_url)}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a></td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTimetable('${t.id}')"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    window.deleteTimetable = async function(id) {
-        const result = await Swal.fire({
-            title: 'Delete Timetable?',
-            text: 'This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Delete'
-        });
-        
-        if (!result.isConfirmed) return;
-        
-        const { data: item } = await supabase
-            .from('timetables')
-            .select('title')
-            .eq('id', id)
-            .single();
-        
-        const { error } = await supabase.from('timetables').delete().eq('id', id);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to delete', 'error');
-        } else {
-            await logAdminAction('DELETE', 'timetable', id, { title: item?.title });
-            Swal.fire('Deleted', 'Timetable removed', 'success');
-            loadTimetables();
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // RESOURCES
-    // ============================================
-    async function loadResources() {
-        const { data, error } = await supabase
-            .from('academic_resources')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        const tbody = document.getElementById('resources-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No resources yet</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = data.map(r => `
-            <tr>
-                <td>${escapeHtml(r.title)}</td>
-                <td><span class="badge-category">${escapeHtml(r.resource_type)}</span></td>
-                <td><a href="${escapeHtml(r.url)}" target="_blank" class="text-truncate d-inline-block" style="max-width: 200px;">${escapeHtml(r.url)}</a></td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteResource('${r.id}')"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    window.deleteResource = async function(id) {
-        const result = await Swal.fire({
-            title: 'Delete Resource?',
-            text: 'This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Delete'
-        });
-        
-        if (!result.isConfirmed) return;
-        
-        const { data: item } = await supabase
-            .from('academic_resources')
-            .select('title')
-            .eq('id', id)
-            .single();
-        
-        const { error } = await supabase.from('academic_resources').delete().eq('id', id);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to delete', 'error');
-        } else {
-            await logAdminAction('DELETE', 'academic_resource', id, { title: item?.title });
-            Swal.fire('Deleted', 'Resource removed', 'success');
-            loadResources();
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // CAREER PATHS
-    // ============================================
-    async function loadCareerPaths() {
-        const { data, error } = await supabase
-            .from('career_paths')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        const tbody = document.getElementById('careers-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No career paths yet</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = data.map(c => `
-            <tr>
-                <td><code>${escapeHtml(c.path_key)}</code></td>
-                <td><strong>${escapeHtml(c.title)}</strong></td>
-                <td class="text-truncate" style="max-width: 300px;">${escapeHtml(c.overview || '')}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCareerPath('${c.id}')"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    window.deleteCareerPath = async function(id) {
-        const result = await Swal.fire({
-            title: 'Delete Career Path?',
-            text: 'This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Delete'
-        });
-        
-        if (!result.isConfirmed) return;
-        
-        const { data: item } = await supabase
-            .from('career_paths')
-            .select('title, path_key')
-            .eq('id', id)
-            .single();
-        
-        const { error } = await supabase.from('career_paths').delete().eq('id', id);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to delete', 'error');
-        } else {
-            await logAdminAction('DELETE', 'career_path', id, { title: item?.title, path_key: item?.path_key });
-            Swal.fire('Deleted', 'Career path removed', 'success');
-            loadCareerPaths();
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // EVENTS
-    // ============================================
-    async function loadEvents() {
-        const { data, error } = await supabase
-            .from('events')
-            .select('*')
-            .order('date', { ascending: false });
-        
-        const tbody = document.getElementById('events-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No events yet</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = data.map(ev => `
-            <tr>
-                <td><strong>${escapeHtml(ev.title)}</strong></td>
-                <td>${ev.date}</td>
-                <td>${ev.requires_payment ? '₦' + Number(ev.payment_amount).toLocaleString() : 'Free'}</td>
-                <td>${ev.current_attendees || 0}${ev.max_attendees ? ' / ' + ev.max_attendees : ''}</td>
-                <td>${ev.is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteEvent('${ev.id}')"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    window.deleteEvent = async function(id) {
-        const result = await Swal.fire({
-            title: 'Delete Event?',
-            text: 'This will also delete all registrations for this event.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Delete'
-        });
-        
-        if (!result.isConfirmed) return;
-        
-        const { data: item } = await supabase
-            .from('events')
-            .select('title')
-            .eq('id', id)
-            .single();
-        
-        const { error } = await supabase.from('events').delete().eq('id', id);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to delete event', 'error');
-        } else {
-            await logAdminAction('DELETE', 'event', id, { title: item?.title });
-            Swal.fire('Deleted', 'Event removed', 'success');
-            loadEvents();
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // PAYMENTS
-    // ============================================
-    async function loadPayments() {
-        const { data, error } = await supabase
-            .from('payment_verification')
-            .select('*, students(first_name, last_name, matric_number), events(title)')
-            .order('created_at', { ascending: false });
-        
-        const tbody = document.getElementById('payments-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No payment verifications</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = data.map(p => {
-            let statusBadge = '';
-            if (p.status === 'verified') statusBadge = 'bg-success';
-            else if (p.status === 'rejected') statusBadge = 'bg-danger';
-            else statusBadge = 'bg-warning';
-            
-            return `
-                <tr>
-                    <td>${escapeHtml(p.students?.first_name || '')} ${escapeHtml(p.students?.last_name || '')}<br><small class="text-muted">${escapeHtml(p.students?.matric_number || 'N/A')}</small></td>
-                    <td>${escapeHtml(p.events?.title || 'N/A')}</td>
-                    <td>₦${Number(p.amount).toLocaleString()}</td>
-                    <td><code class="small">${escapeHtml(p.payment_reference)}</code></td>
-                    <td><span class="badge ${statusBadge}">${p.status}</span></td>
-                    <td>
-                        ${p.status === 'pending' ? `
-                            <button class="btn btn-sm btn-success me-1" onclick="verifyPayment('${p.id}', true)"><i class="bi bi-check"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="verifyPayment('${p.id}', false)"><i class="bi bi-x"></i></button>
-                        ` : ''}
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    window.verifyPayment = async function(id, approved) {
-        const session = await checkAuth();
-        
-        const { data: adminData } = await supabase
-            .from('admin_users')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .single();
-        
-        const status = approved ? 'verified' : 'rejected';
-        
-        const { error } = await supabase
-            .from('payment_verification')
-            .update({
-                status,
-                verified_by: adminData?.id,
-                verified_at: new Date().toISOString()
-            })
-            .eq('id', id);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to update payment status', 'error');
-        } else {
-            await logAdminAction('VERIFY_PAYMENT', 'payment_verification', id, { status });
-            Swal.fire('Success', 'Payment ' + status, 'success');
-            loadPayments();
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // STUDENTS
-    // ============================================
-    function initStudentFilters() {
-        document.querySelectorAll('[data-student-filter]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('[data-student-filter]').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                loadStudents(this.dataset.studentFilter);
-            });
-        });
-    }
-
-    async function loadStudents(filter = 'pending') {
-        let query = supabase.from('students').select('*').order('created_at', { ascending: false });
-        
-        if (filter !== 'all') {
-            query = query.eq('status', filter);
-        }
-        
-        const { data, error } = await query;
-        const tbody = document.getElementById('students-table-body');
-        
-        if (error || !data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No ${filter} students found</td></tr>`;
-            return;
-        }
-        
-        tbody.innerHTML = data.map(s => {
-            let badgeClass = 'bg-warning';
-            if (s.status === 'approved') badgeClass = 'bg-success';
-            if (s.status === 'rejected') badgeClass = 'bg-danger';
-            
-            return `
-                <tr>
-                    <td><strong>${escapeHtml(s.name)}</strong></td>
-                    <td>${escapeHtml(s.email)}</td>
-                    <td>${escapeHtml(s.matric_no)}</td>
-                    <td>${escapeHtml(s.course)}</td>
-                    <td><span class="badge ${badgeClass}">${s.status || 'pending'}</span></td>
-                    <td>
-                        ${(!s.status || s.status === 'pending') ? `
-                            <button class="btn btn-sm btn-success me-1" onclick="verifyStudent('${s.user_id}', true)"><i class="bi bi-check"></i> Approve</button>
-                            <button class="btn btn-sm btn-danger" onclick="verifyStudent('${s.user_id}', false)"><i class="bi bi-x"></i> Reject</button>
-                        ` : `
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${s.user_id}')"><i class="bi bi-trash"></i></button>
-                        `}
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    window.verifyStudent = async function(userId, approved) {
-        const status = approved ? 'approved' : 'rejected';
-        const { error } = await supabase.from('students').update({ status }).eq('user_id', userId);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to update student status', 'error');
-        } else {
-            await logAdminAction('VERIFY_STUDENT', 'students', userId, { status });
-            Swal.fire('Success', `Student ${status} successfully`, 'success');
-            loadStudents(document.querySelector('[data-student-filter].active')?.dataset.studentFilter || 'pending');
-            loadDashboardStats();
-        }
-    };
-
-    window.deleteStudent = async function(userId) {
-        const result = await Swal.fire({
-            title: 'Delete Student?',
-            text: 'This will permanently remove the student profile.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Delete'
-        });
-        
-        if (!result.isConfirmed) return;
-        
-        const { data: item } = await supabase
-            .from('students')
-            .select('name, matric_no, email')
-            .eq('user_id', userId)
-            .single();
-        
-        const { error } = await supabase.from('students').delete().eq('user_id', userId);
-        
-        if (error) {
-            Swal.fire('Error', 'Failed to delete student', 'error');
-        } else {
-            await logAdminAction('DELETE_STUDENT', 'students', userId, {
-                name: item?.name,
-                matric_no: item?.matric_no,
-                email: item?.email
-            });
-            Swal.fire('Deleted', 'Student removed', 'success');
-            loadStudents(document.querySelector('[data-student-filter].active')?.dataset.studentFilter || 'pending');
-            loadDashboardStats();
-        }
-    };
-
-    // ============================================
-    // FORM HANDLERS
-    // ============================================
-    function initForms() {
-        document.getElementById('addQuestionForm').addEventListener('submit', handleAddQuestion);
-        document.getElementById('addTimetableForm').addEventListener('submit', handleAddTimetable);
-        document.getElementById('addResourceForm').addEventListener('submit', handleAddResource);
-        document.getElementById('addCareerPathForm').addEventListener('submit', handleAddCareerPath);
-        document.getElementById('addEventForm').addEventListener('submit', handleAddEvent);
-    }
-
-    async function handleAddQuestion(e) {
-        e.preventDefault();
-        const session = await checkAuth();
-        
-        try {
-            checkActionLimit('upload_question', 20, 60000);
-        } catch (error) {
-            Swal.fire('Rate Limit', error.message, 'warning');
-            return;
-        }
-        
-        const fileInput = document.getElementById('q-file');
-        const file = fileInput.files[0];
-        
-        const fileValidation = validateFile(file);
-        if (!fileValidation.valid) {
-            Swal.fire('Error', fileValidation.error, 'error');
-            return;
-        }
-        
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Uploading...';
-        
-        try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `past_questions/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-            
-            const { error: uploadError } = await supabase.storage
-                .from('nacos-assets')
-                .upload(fileName, file);
-            
-            if (uploadError) throw uploadError;
-            
-            const { data: urlData } = supabase.storage
-                .from('nacos-assets')
-                .getPublicUrl(fileName);
-            
-            const { data: adminData } = await supabase
-                .from('admin_users')
-                .select('id')
-                .eq('user_id', session.user.id)
-                .single();
-            
-            const { error: insertError } = await supabase.from('past_questions').insert({
-                title: document.getElementById('q-title').value.trim(),
-                course_code: document.getElementById('q-course-code').value.trim().toUpperCase(),
-                course_name: document.getElementById('q-course-name').value.trim(),
-                level: document.getElementById('q-level').value,
-                semester: document.getElementById('q-semester').value,
-                file_url: urlData.publicUrl,
-                file_type: file.type,
-                uploaded_by: adminData?.id
-            });
-            
-            if (insertError) throw insertError;
-            
-            await logAdminAction('CREATE', 'past_question', null, {
-                course_code: document.getElementById('q-course-code').value.trim(),
-                course_name: document.getElementById('q-course-name').value.trim(),
-                level: document.getElementById('q-level').value
-            });
-            
-            Swal.fire('Success', 'Past question uploaded successfully', 'success').then(() => {
-                bootstrap.Modal.getInstance(document.getElementById('addQuestionModal')).hide();
-                document.getElementById('addQuestionForm').reset();
-                loadPastQuestions();
-                loadDashboardStats();
-            });
-            
-        } catch (err) {
-            Swal.fire('Error', 'Failed to upload: ' + err.message, 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Upload';
-        }
-    }
-
-    async function handleAddTimetable(e) {
-        e.preventDefault();
-        const session = await checkAuth();
-        
-        const fileInput = document.getElementById('t-file');
-        const file = fileInput.files[0];
-        
-        const fileValidation = validateFile(file);
-        if (!fileValidation.valid) {
-            Swal.fire('Error', fileValidation.error, 'error');
-            return;
-        }
-        
-        const isCurrent = document.getElementById('t-current').value === 'true';
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Uploading...';
-        
-        try {
-            if (isCurrent) {
-                await supabase.from('timetables').update({ is_current: false });
-            }
-            
-            const fileName = `timetables/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-            
-            const { error: uploadError } = await supabase.storage
-                .from('nacos-assets')
-                .upload(fileName, file);
-            
-            if (uploadError) throw uploadError;
-            
-            const { data: urlData } = supabase.storage
-                .from('nacos-assets')
-                .getPublicUrl(fileName);
-            
-            const { data: adminData } = await supabase
-                .from('admin_users')
-                .select('id')
-                .eq('user_id', session.user.id)
-                .single();
-            
-            const { error: insertError } = await supabase.from('timetables').insert({
-                title: document.getElementById('t-title').value.trim(),
-                description: document.getElementById('t-description').value.trim(),
-                version: document.getElementById('t-version').value.trim(),
-                file_url: urlData.publicUrl,
-                file_type: file.type,
-                is_current: isCurrent,
-                uploaded_by: adminData?.id
-            });
-            
-            if (insertError) throw insertError;
-            
-            await logAdminAction('CREATE', 'timetable', null, {
-                title: document.getElementById('t-title').value.trim(),
-                version: document.getElementById('t-version').value.trim()
-            });
-            
-            Swal.fire('Success', 'Timetable uploaded successfully', 'success').then(() => {
-                bootstrap.Modal.getInstance(document.getElementById('addTimetableModal')).hide();
-                document.getElementById('addTimetableForm').reset();
-                loadTimetables();
-                loadDashboardStats();
-            });
-            
-        } catch (err) {
-            Swal.fire('Error', 'Failed to upload: ' + err.message, 'error');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Upload';
-        }
-    }
-
-    async function handleAddResource(e) {
-        e.preventDefault();
-        const session = await checkAuth();
-        
-        const { data: adminData } = await supabase
-            .from('admin_users')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .single();
-        
-        const { error: insertError } = await supabase.from('academic_resources').insert({
-            title: document.getElementById('r-title').value.trim(),
-            resource_type: document.getElementById('r-type').value,
-            url: document.getElementById('r-url').value.trim(),
-            category: document.getElementById('r-category').value || null,
-            description: document.getElementById('r-description').value.trim() || null,
-            uploaded_by: adminData?.id
-        });
-        
-        if (insertError) {
-            Swal.fire('Error', 'Failed to add resource: ' + insertError.message, 'error');
-        } else {
-            await logAdminAction('CREATE', 'academic_resource', null, {
-                title: document.getElementById('r-title').value.trim(),
-                type: document.getElementById('r-type').value
-            });
-            
-            Swal.fire('Success', 'Resource added successfully', 'success').then(() => {
-                bootstrap.Modal.getInstance(document.getElementById('addResourceModal')).hide();
-                document.getElementById('addResourceForm').reset();
-                loadResources();
-                loadDashboardStats();
-            });
-        }
-    }
-
-    async function handleAddCareerPath(e) {
-        e.preventDefault();
-        
-        const pathKey = document.getElementById('cp-key').value.trim().toLowerCase();
-        const title = document.getElementById('cp-title').value.trim();
-        const overview = document.getElementById('cp-overview').value.trim();
-        const skillsInput = document.getElementById('cp-skills').value.trim();
-        const toolsInput = document.getElementById('cp-tools').value.trim();
-        const resourcesInput = document.getElementById('cp-resources').value.trim();
-        
-        const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(s => s) : [];
-        const tools = toolsInput ? toolsInput.split(',').map(t => t.trim()).filter(t => t) : [];
-        
-        let externalResources = [];
-        if (resourcesInput) {
-            try {
-                externalResources = secureJSONParse(resourcesInput);
-            } catch (e) {
-                Swal.fire('Error', e.message, 'error');
-                return;
-            }
-        }
-        
-        try {
-            const { error: insertError } = await supabase.from('career_paths').insert({
-                path_key: pathKey,
-                title,
-                overview,
-                skills_required: skills,
-                tools_technologies: tools,
-                external_resources: externalResources
-            });
-            
-            if (insertError) {
-                if (insertError.code === '23505') {
-                    Swal.fire('Error', 'A career path with this key already exists', 'error');
-                } else {
-                    throw insertError;
-                }
-                return;
-            }
-            
-            await logAdminAction('CREATE', 'career_path', null, { path_key: pathKey, title });
-            
-            Swal.fire('Success', 'Career path added successfully', 'success').then(() => {
-                bootstrap.Modal.getInstance(document.getElementById('addCareerPathModal')).hide();
-                document.getElementById('addCareerPathForm').reset();
-                loadCareerPaths();
-                loadDashboardStats();
-            });
-            
-        } catch (err) {
-            Swal.fire('Error', 'Failed to add career path: ' + err.message, 'error');
-        }
-    }
-
-    async function handleAddEvent(e) {
-        e.preventDefault();
-        const session = await checkAuth();
-        
-        const requiresPayment = document.getElementById('ev-requires-payment').value === 'true';
-        const amount = document.getElementById('ev-amount').value;
-        
-        const { data: adminData } = await supabase
-            .from('admin_users')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .single();
-        
-        const { error: insertError } = await supabase.from('events').insert({
-            title: document.getElementById('ev-title').value.trim(),
-            description: document.getElementById('ev-description').value.trim(),
-            event_type: document.getElementById('ev-type').value,
-            date: document.getElementById('ev-date').value,
-            time: document.getElementById('ev-time').value,
-            location: document.getElementById('ev-location').value.trim(),
-            max_attendees: document.getElementById('ev-max').value ? parseInt(document.getElementById('ev-max').value) : null,
-            requires_payment: requiresPayment,
-            payment_amount: requiresPayment ? parseFloat(amount) : null,
-            payment_details: document.getElementById('ev-payment-details').value.trim(),
-            image_url: document.getElementById('ev-image').value.trim() || null,
-            created_by: adminData?.id,
-            is_active: true
-        });
-        
-        if (insertError) {
-            Swal.fire('Error', 'Failed to create event: ' + insertError.message, 'error');
-        } else {
-            await logAdminAction('CREATE', 'event', null, {
-                title: document.getElementById('ev-title').value.trim(),
-                date: document.getElementById('ev-date').value
-            });
-            
-            Swal.fire('Success', 'Event created successfully', 'success').then(() => {
-                bootstrap.Modal.getInstance(document.getElementById('addEventModal')).hide();
-                document.getElementById('addEventForm').reset();
-                loadEvents();
-                loadDashboardStats();
-            });
-        }
-    }
-
-    // ============================================
-    // LOGOUT
-    // ============================================
-    function initLogout() {
-        document.getElementById('logout-btn').addEventListener('click', async function(e) {
-            e.preventDefault();
-            const result = await Swal.fire({
-                title: 'Logout?',
-                text: 'Are you sure you want to logout?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Logout'
-            });
-            
-            if (result.isConfirmed) {
-                clearTimeout(sessionTimeout);
-                await signOut();
-            }
-        });
-    }
-
-    // ============================================
-    // UTILITIES
-    // ============================================
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+      try {
+        const [questions, timetables, resources, students] = await Promise.all([
+          supabase.from('past_questions').select('id', { count: 'exact', head: true }),
+          supabase.from('timetables').select('id', { count: 'exact', head: true }),
+          supabase.from('academic_resources').select('id', { count: 'exact', head: true }),
+          supabase.from('students').select('id', { count: 'exact', head: true }).eq('status', 'pending')
+        ]);
+        
+        document.getElementById('stat-questions').textContent = questions.count || 0;
+        document.getElementById('stat-timetables').textContent = timetables.count || 0;
+        document.getElementById('stat-resources').textContent = resources.count || 0;
+        document.getElementById('stat-students').textContent = students.count || 0;
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
     }
     
-    // Initialize AOS
-    AOS.init({
-        duration: 800,
-        once: true
+    // ============================================
+    // EVENTS (with File Upload)
+    // ============================================
+    
+    async function loadEvents() {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('date', { ascending: false });
+      
+      const tbody = document.getElementById('events-table-body');
+      
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No events yet</td</tr>';
+        return;
+      }
+      
+      tbody.innerHTML = data.map(ev => `
+        <tr>
+          <td>
+            ${ev.image_url ? `<img src="${ev.image_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;" class="me-2">` : ''}
+            <strong>${escapeHtml(ev.title)}</strong>
+          </td>
+          <td>${ev.date}</td>
+          <td>${ev.requires_payment ? '₦' + Number(ev.payment_amount).toLocaleString() : 'Free'}</td>
+          <td>${ev.current_attendees || 0}${ev.max_attendees ? ' / ' + ev.max_attendees : ''}</td>
+          <td>${ev.is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteEventItem('${ev.id}')"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    window.deleteEventItem = async function(id) {
+      const result = await Swal.fire({
+        title: 'Delete Event?',
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Delete'
+      });
+      
+      if (!result.isConfirmed) return;
+      
+      const { error } = await supabase.from('events').delete().eq('id', id);
+      
+      if (error) {
+        Swal.fire('Error', 'Failed to delete event', 'error');
+      } else {
+        await logAdminAction('DELETE', 'event', id);
+        Swal.fire('Deleted', 'Event removed', 'success');
+        loadEvents();
+        loadDashboardStats();
+      }
+    };
+    
+    // Handle Add Event with File Upload
+    document.getElementById('addEventForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const session = await checkAuth();
+      
+      const title = document.getElementById('ev-title').value.trim();
+      const description = document.getElementById('ev-description').value.trim();
+      const eventType = document.getElementById('ev-type').value;
+      const date = document.getElementById('ev-date').value;
+      const time = document.getElementById('ev-time').value;
+      const location = document.getElementById('ev-location').value.trim();
+      const maxAttendees = document.getElementById('ev-max').value;
+      const requiresPayment = document.getElementById('ev-requires-payment').value === 'true';
+      const amount = document.getElementById('ev-amount').value || 0;
+      const paymentDetails = document.getElementById('ev-payment-details').value.trim();
+      const imageFile = document.getElementById('ev-image').files[0];
+      
+      let imageUrl = null;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating...';
+      
+      try {
+        if (imageFile) {
+          if (imageFile.size > 2 * 1024 * 1024) throw new Error('Image must be less than 2MB');
+          const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+          if (!allowedTypes.includes(imageFile.type)) throw new Error('Invalid file type');
+          
+          const fileExt = imageFile.name.split('.').pop();
+          const fileName = `events/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('nacos-assets')
+            .upload(fileName, imageFile);
+          if (uploadError) throw uploadError;
+          
+          const { data: urlData } = supabase.storage.from('nacos-assets').getPublicUrl(fileName);
+          imageUrl = urlData.publicUrl;
+        }
+        
+        const { data: adminData } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        const { error: insertError } = await supabase.from('events').insert({
+          title, description, event_type: eventType, date, time, location,
+          max_attendees: maxAttendees ? parseInt(maxAttendees) : null,
+          requires_payment: requiresPayment,
+          payment_amount: requiresPayment ? parseFloat(amount) : null,
+          payment_details: paymentDetails,
+          image_url: imageUrl,
+          created_by: adminData?.id,
+          is_active: true
+        });
+        
+        if (insertError) throw insertError;
+        
+        await logAdminAction('CREATE', 'event', null, { title });
+        Swal.fire('Success', 'Event created', 'success').then(() => {
+          bootstrap.Modal.getInstance(document.getElementById('addEventModal')).hide();
+          document.getElementById('addEventForm').reset();
+          loadEvents();
+          loadDashboardStats();
+        });
+        
+      } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Create Event';
+      }
     });
+    
+    // ============================================
+    // STUDENT VERIFICATION
+    // ============================================
+    
+    let currentStudentFilter = 'pending';
+    
+    async function loadStudents(filter = 'pending') {
+      currentStudentFilter = filter;
+      let query = supabase.from('students').select('*').order('created_at', { ascending: false });
+      
+      if (filter !== 'all') {
+        query = query.eq('status', filter);
+      }
+      
+      const { data, error } = await query;
+      const tbody = document.getElementById('students-table-body');
+      
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No ${filter} students found</td</tr>`;
+        return;
+      }
+      
+      tbody.innerHTML = data.map(s => {
+        let badgeClass = 'bg-warning';
+        if (s.status === 'approved') badgeClass = 'bg-success';
+        if (s.status === 'rejected') badgeClass = 'bg-danger';
+        
+        return `
+          <tr>
+            <td><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></td>
+            <td>${escapeHtml(s.school_email)}</td>
+            <td>${escapeHtml(s.matric_number)}</td>
+            <td>${escapeHtml(s.department)}</td>
+            <td><span class="badge ${badgeClass}">${s.status || 'pending'}</span></td>
+            <td>
+              ${(!s.status || s.status === 'pending') ? `
+                <button class="btn btn-sm btn-success me-1" onclick="verifyStudent('${s.user_id}', true)"><i class="bi bi-check"></i> Approve</button>
+                <button class="btn btn-sm btn-danger" onclick="verifyStudent('${s.user_id}', false)"><i class="bi bi-x"></i> Reject</button>
+              ` : `
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${s.user_id}')"><i class="bi bi-trash"></i></button>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    window.verifyStudent = async function(userId, approved) {
+      const status = approved ? 'approved' : 'rejected';
+      const { error } = await supabase.from('students').update({ status }).eq('user_id', userId);
+      
+      if (error) {
+        Swal.fire('Error', 'Failed to update student status', 'error');
+      } else {
+        await logAdminAction('VERIFY_STUDENT', 'students', userId, { status });
+        Swal.fire('Success', `Student ${status}`, 'success');
+        loadStudents(currentStudentFilter);
+        loadDashboardStats();
+      }
+    };
+    
+    window.deleteStudent = async function(userId) {
+      const result = await Swal.fire({
+        title: 'Delete Student?',
+        text: 'This will permanently remove the student profile.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Delete'
+      });
+      
+      if (!result.isConfirmed) return;
+      
+      const { error } = await supabase.from('students').delete().eq('user_id', userId);
+      if (error) {
+        Swal.fire('Error', 'Failed to delete student', 'error');
+      } else {
+        await logAdminAction('DELETE_STUDENT', 'students', userId);
+        Swal.fire('Deleted', 'Student removed', 'success');
+        loadStudents(currentStudentFilter);
+        loadDashboardStats();
+      }
+    };
+    
+    // Initialize student filter buttons
+    document.querySelectorAll('[data-student-filter]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-student-filter]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        loadStudents(this.dataset.studentFilter);
+      });
+    });
+    
+    // ============================================
+    // LOAD OTHER DATA (Simplified)
+    // ============================================
+    
+    async function loadPastQuestions() {
+      const { data, error } = await supabase.from('past_questions').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('questions-table-body');
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No past questions</td</tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(q => `
+        <tr>
+          <td><strong>${escapeHtml(q.course_code)}</strong></td>
+          <td>${escapeHtml(q.course_name)}</td>
+          <td><span class="badge-category">${q.level} Level</span></td>
+          <td>${q.semester}</td>
+          <td><a href="${escapeHtml(q.file_url)}" target="_blank" class="btn btn-sm btn-outline-primary">View</a></td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="deletePastQuestion('${q.id}')"><i class="bi bi-trash"></i></button></td>
+        </tr>
+      `).join('');
+    }
+    
+    window.deletePastQuestion = async function(id) {
+      const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Delete' });
+      if (!result.isConfirmed) return;
+      const { error } = await supabase.from('past_questions').delete().eq('id', id);
+      if (error) Swal.fire('Error', 'Failed to delete', 'error');
+      else { loadPastQuestions(); loadDashboardStats(); }
+    };
+    
+    async function loadTimetables() {
+      const { data, error } = await supabase.from('timetables').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('timetables-table-body');
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No timetables</td</tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(t => `
+        <tr>
+          <td>${escapeHtml(t.title)}</td>
+          <td><span class="badge-category">${escapeHtml(t.version)}</span></td>
+          <td>${t.is_current ? '<span class="badge bg-success">Current</span>' : ''}</td>
+          <td><a href="${escapeHtml(t.file_url)}" target="_blank" class="btn btn-sm btn-outline-primary">View</a></td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="deleteTimetable('${t.id}')"><i class="bi bi-trash"></i></button></td>
+        </tr>
+      `).join('');
+    }
+    
+    window.deleteTimetable = async function(id) {
+      const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Delete' });
+      if (!result.isConfirmed) return;
+      const { error } = await supabase.from('timetables').delete().eq('id', id);
+      if (error) Swal.fire('Error', 'Failed to delete', 'error');
+      else { loadTimetables(); loadDashboardStats(); }
+    };
+    
+    async function loadResources() {
+      const { data, error } = await supabase.from('academic_resources').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('resources-table-body');
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No resources</td</tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(r => `
+        <tr>
+          <td>${escapeHtml(r.title)}</td>
+          <td><span class="badge-category">${escapeHtml(r.resource_type)}</span></td>
+          <td><a href="${escapeHtml(r.url)}" target="_blank" class="text-truncate" style="max-width:200px;">${escapeHtml(r.url)}</a></td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="deleteResource('${r.id}')"><i class="bi bi-trash"></i></button></td>
+        </tr>
+      `).join('');
+    }
+    
+    window.deleteResource = async function(id) {
+      const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Delete' });
+      if (!result.isConfirmed) return;
+      const { error } = await supabase.from('academic_resources').delete().eq('id', id);
+      if (error) Swal.fire('Error', 'Failed to delete', 'error');
+      else { loadResources(); loadDashboardStats(); }
+    };
+    
+    async function loadCareerPaths() {
+      const { data, error } = await supabase.from('career_paths').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('careers-table-body');
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No career paths</td</tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(c => `
+        <tr>
+          <td><code>${escapeHtml(c.path_key)}</code></td>
+          <td><strong>${escapeHtml(c.title)}</strong></td>
+          <td>${escapeHtml(c.overview?.substring(0, 100) || '')}</td>
+          <td><button class="btn btn-sm btn-outline-danger" onclick="deleteCareerPath('${c.id}')"><i class="bi bi-trash"></i></button></td>
+        </tr>
+      `).join('');
+    }
+    
+    window.deleteCareerPath = async function(id) {
+      const result = await Swal.fire({ title: 'Delete?', text: 'Cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Delete' });
+      if (!result.isConfirmed) return;
+      const { error } = await supabase.from('career_paths').delete().eq('id', id);
+      if (error) Swal.fire('Error', 'Failed to delete', 'error');
+      else { loadCareerPaths(); loadDashboardStats(); }
+    };
+    
+    async function loadPayments() {
+      const { data, error } = await supabase.from('payment_verification').select('*, students(name, matric_no), events(title)').order('created_at', { ascending: false });
+      const tbody = document.getElementById('payments-table-body');
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No payments</td</tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(p => `
+        <tr>
+          <td>${escapeHtml(p.students?.name || 'N/A')}<br><small>${escapeHtml(p.students?.matric_no || '')}</small></td>
+          <td>${escapeHtml(p.events?.title || 'N/A')}</td>
+          <td>₦${Number(p.amount).toLocaleString()}</td>
+          <td><code>${escapeHtml(p.payment_reference)}</code></td>
+          <td><span class="badge ${p.status === 'verified' ? 'bg-success' : p.status === 'rejected' ? 'bg-danger' : 'bg-warning'}">${p.status}</span></td>
+          <td>${p.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="verifyPayment('${p.id}', true)">Approve</button>` : ''}</td>
+        </tr>
+      `).join('');
+    }
+    
+    window.verifyPayment = async function(id, approved) {
+      const status = approved ? 'verified' : 'rejected';
+      const { error } = await supabase.from('payment_verification').update({ status }).eq('id', id);
+      if (error) Swal.fire('Error', 'Failed to update', 'error');
+      else { Swal.fire('Success', `Payment ${status}`, 'success'); loadPayments(); loadDashboardStats(); }
+    };
+    
+    // ============================================
+    // NAVIGATION & LOGOUT
+    // ============================================
+    
+    function showSection(section) {
+      document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      
+      const sectionEl = document.getElementById(`${section}-section`);
+      if (sectionEl) sectionEl.style.display = 'block';
+      
+      const navLink = document.querySelector(`.nav-link[data-section="${section}"]`);
+      if (navLink) navLink.classList.add('active');
+      
+      const titles = { dashboard: 'Dashboard', 'past-questions': 'Past Questions', timetables: 'Timetables', resources: 'Resources', 'career-paths': 'Career Paths', events: 'Events', payments: 'Payments', students: 'Student Verification' };
+      document.getElementById('page-title').textContent = titles[section] || section;
+    }
+    
+    document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showSection(link.dataset.section);
+      });
+    });
+    
+    document.getElementById('menu-toggle')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('show');
+    });
+    
+    document.getElementById('logout-btn')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const result = await Swal.fire({ title: 'Logout?', text: 'Are you sure?', icon: 'question', showCancelButton: true, confirmButtonText: 'Logout' });
+      if (result.isConfirmed) {
+        await signOut();
+      }
+    });
+    
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    
+    async function init() {
+      const isAdmin = await requireAdmin();
+      if (!isAdmin) return;
+      
+      resetSessionTimeout();
+      
+      await Promise.all([
+        loadDashboardStats(),
+        loadPastQuestions(),
+        loadTimetables(),
+        loadResources(),
+        loadCareerPaths(),
+        loadEvents(),
+        loadPayments(),
+        loadStudents('pending')
+      ]);
+    }
+    
+    init();
     
   </script>
 </body>

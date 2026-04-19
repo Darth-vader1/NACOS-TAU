@@ -1,0 +1,25 @@
+{
+  "name": "nacos-website",
+  "version": "1.0.0",
+  "description": "nacos portal",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Darth-vader1/NACOS-TAU.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Darth-vader1/NACOS-TAU/issues"
+  },
+  "homepage": "https://github.com/Darth-vader1/NACOS-TAU#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.3"
+  }
+}

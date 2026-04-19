@@ -184,7 +184,7 @@
             </div>
             
             <div class="form-group">
-              <label>Degree Program:</label>
+              <label>Department:</label>
               <div style="padding: 2%;display: flex; gap: 20px; flex-wrap: wrap;">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="course" id="soft_eng" value="Software Engineering" required>
@@ -294,10 +294,10 @@
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="config.local.js"></script>
+  <script src="assets/js/config.js"></script>
   <script type="module" src="assets/js/supabase-config.js"></script>
   <!-- Main JS File -->
-  <script src="dashboard asseets/js/main.js"></script>
+  <script src="dashboard assets/js/main.js"></script>
   
   <!-- Signup Script -->
   <script type="module">
@@ -489,95 +489,53 @@
       const email = emailInput.value.trim().toLowerCase();
       const password = passwordInput.value;
       const matricNo = matricNoInput.value.trim().toUpperCase();
-      const course = selectedCourse.value;
+      const department = selectedCourse.value;
       
       // Show loading state
       signupButton.disabled = true;
       signupButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating account...';
       
       try {
-        // Check if student already exists in database
-        const { data: existingStudent, error: checkError } = await supabase
-          .from('students')
-          .select('email, matric_no')
-          .or(`email.eq.${email},matric_no.eq.${matricNo}`);
-        
-        if (existingStudent && existingStudent.length > 0) {
-          throw new Error('A student with this email or matric number already exists');
-        }
-        
-        // Create user in Supabase Auth
-        const { data: authData, error: signUpError } = await supabase.auth.signUp({
-          email: email,
-          password: password,
-          options: {
-            data: {
-              full_name: fullName,
-              matric_no: matricNo,
-              course: course,
-              user_type: 'student'
-            }
-          }
+        // Use Netlify function for signup to ensure student profile is created
+        const response = await fetch('/.netlify/functions/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            first_name: firstNameInput.value.trim(),
+            last_name: lastNameInput.value.trim(),
+            matric_number: matricNo,
+            department: department
+          })
         });
         
-        if (signUpError) throw signUpError;
+        const result = await response.json();
         
-        if (!authData.user) {
-          throw new Error('Failed to create user account');
+        if (!response.ok) {
+          throw new Error(result.error || 'Signup failed');
         }
         
-        // Insert student record into students table
-        const { error: insertError } = await supabase
-          .from('students')
-          .insert([
-            {
-              id: authData.user.id,
-              user_id: authData.user.id,
-              matric_no: matricNo,
-              name: fullName,
-              email: email,
-              course: course,
-              profile_picture_url: null,
-              created_at: new Date().toISOString()
-            }
-          ]);
-        
-        if (insertError) {
-          console.error('Insert error:', insertError);
-          // Don't throw here - auth user was created, just log the error
-          console.warn('Student record insertion failed but auth user created');
-        }
-        
-        // Show success message
+        // Success
         await Swal.fire({
           title: 'Registration Successful!',
-          html: `Account created for <strong>${fullName}</strong><br><br>Please check your email at <strong>${email}</strong> to verify your account before logging in.`,
+          text: 'Your account has been created and is pending admin approval. You will be able to log in once an admin verifies your details.',
           icon: 'success',
-          confirmButtonText: 'Go to Login',
-          allowOutsideClick: false
+          confirmButtonText: 'Go to Login'
         });
         
-        // Redirect to login page
         window.location.href = 'student-login.html';
         
-      } catch (error) {
-        console.error('Signup error:', error);
-        
-        let errorMessage = error.message || 'Registration failed. Please try again.';
-        
-        if (errorMessage.includes('User already registered')) {
-          errorMessage = 'This email is already registered. Please login instead.';
-        } else if (errorMessage.includes('password')) {
-          errorMessage = 'Password must be at least 6 characters.';
-        }
-        
+      } catch (err) {
+        console.error('Signup error:', err);
         await Swal.fire({
           title: 'Registration Failed',
-          text: errorMessage,
+          text: err.message || 'An error occurred during registration. Please try again.',
           icon: 'error',
-          confirmButtonText: 'Try Again'
+          confirmButtonText: 'OK'
         });
-        
       } finally {
         signupButton.disabled = false;
         signupButton.innerHTML = 'Sign Up';
