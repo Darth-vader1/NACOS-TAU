@@ -9,8 +9,6 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     throw new Error('Supabase configuration is required');
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 // Create client with production settings
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
